@@ -1,25 +1,28 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" v-show="showSearch" :inline="true">
-      <el-form-item label="OTA编码" prop="otaCode">
+      <el-form-item label="OTA平台编码" prop="otaCode">
         <el-input
           v-model="queryParams.otaCode"
-          placeholder="请输入OTA编码"
+          placeholder="请输入OTA平台编码"
           clearable
           size="small"
           style="width: 240px"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
+
       <el-form-item label="OTA站点编码" prop="otaSiteCode">
         <el-input
           v-model="queryParams.otaSiteCode"
-          placeholder="请输入PCC编码"
+          placeholder="请输入OTA站点编码"
           clearable
           size="small"
           style="width: 240px"
+          @keyup.enter.native="handleQuery"
         />
       </el-form-item>
+
       <el-form-item label="状态" prop="status">
         <el-select
           v-model="queryParams.status"
@@ -36,18 +39,7 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="创建时间">
-        <el-date-picker
-          v-model="dateRange"
-          size="small"
-          style="width: 240px"
-          value-format="yyyy-MM-dd"
-          type="daterange"
-          range-separator="-"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
-        ></el-date-picker>
-      </el-form-item>
+
       <el-form-item>
         <el-button type="cyan" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
@@ -61,7 +53,7 @@
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['direct/ota_site/add']"
+          v-hasPermi="['direct/site_config/add']"
         >新增</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -71,7 +63,7 @@
           size="mini"
           :disabled="single"
           @click="handleUpdate"
-          v-hasPermi="['direct/ota_site/edit']"
+          v-hasPermi="['direct/site_config/edit']"
         >修改</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -81,18 +73,19 @@
           size="mini"
           :disabled="multiple"
           @click="handleDelete"
-          v-hasPermi="['direct/ota_site/remove']"
+          v-hasPermi="['direct/site_config/remove']"
         >删除</el-button>
       </el-col>
     </el-row>
 
-    <el-table v-loading="loading" :data="otaSiteList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="siteConfigList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="id" prop="id" width="100" />
       <el-table-column label="OTA平台编码" prop="otaCode" width="100" />
+      <el-table-column label="OTA平台中文名" prop="otaCodeName" width="200" />
       <el-table-column label="OTA站点编码" prop="otaSiteCode" width="200" />
-      <el-table-column label="OTA站点中文名" prop="otaSiteCname" width="200" />
-      <el-table-column label="OTA站点英文名" prop="otaSiteEname" width="100" />
+      <el-table-column label="OTA站点中文名" prop="otaSiteCodeName" width="100" />
+      <el-table-column label="推送数量(万)" prop="otaMaxPolicy" width="100" />
       <el-table-column label="状态" align="center" width="100">
         <template slot-scope="scope">
           <el-switch
@@ -115,14 +108,14 @@
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['direct/ota_site/edit']"
+            v-hasPermi="['direct/site_config/edit']"
           >修改</el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['direct/ota_site/remove']"
+            v-hasPermi="['direct/site_config/remove']"
           >删除</el-button>
         </template>
       </el-table-column>
@@ -136,20 +129,20 @@
       @pagination="getList"
     />
 
-    <!-- 添加或修改角色配置对话框 -->
+    <!-- 添加或修改站点配置对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="OTA平台编码" prop="otaCode">
           <el-input v-model="form.otaCode" placeholder="请输入OTA平台编码" />
         </el-form-item>
+        <el-form-item label="OTA平台中文名" prop="otaSiteCname">
+          <el-input v-model="form.otaCodeName" placeholder="只能录入大写字母,汉字,数字" />
+        </el-form-item>
         <el-form-item label="OTA站点编码" prop="otaSiteCode">
           <el-input v-model="form.otaSiteCode" placeholder="请输入OTA站点编码" />
         </el-form-item>
-        <el-form-item label="OTA站点中文名" prop="otaSiteCname">
-          <el-input v-model="form.otaSiteCname" placeholder="只能录入大写字母" />
-        </el-form-item>
-        <el-form-item label="OTA站点英文名" prop="otaSiteEname">
-          <el-input v-model="form.otaSiteEname" placeholder="只能录入大写字母" />
+        <el-form-item label="OTA站点中文名" prop="otaSiteEname">
+          <el-input v-model="form.otaSiteCodeName" placeholder="只能录入大写字母,汉字,数字" />
         </el-form-item>
 
         <el-form-item label="状态">
@@ -174,10 +167,10 @@
 </template>
 
 <script>
-  import { listOtaSite, getOtaSite, delOtaSite, addOtaSite, updateOtaSite, changeOtaSiteStatus } from "@/api/direct/basic/otaSite";
+  import { listSiteConfig, getSiteConfig, delSiteConfig, addSiteConfig, updateSiteConfig, changeSiteConfigStatus } from "@/api/direct/basic/siteConfig";
 
   export default {
-    name: "OtaSite",
+    name: "SiteConfig",
     data() {
       return {
         // 遮罩层
@@ -193,7 +186,7 @@
         // 总条数
         total: 0,
         // OtaSite表格数据
-        otaSiteList: [],
+        siteConfigList: [],
         // 弹出层标题
         title: "",
         // 是否显示弹出层
@@ -233,10 +226,10 @@
       /** 查询角色列表 */
       getList() {
         this.loading = true;
-        listOtaSite(this.addDateRange(this.queryParams, this.dateRange)).then(
+        listSiteConfig(this.addDateRange(this.queryParams, this.dateRange)).then(
           responseData => {
             const response = responseData.data;
-            this.otaSiteList = response.records;
+            this.siteConfigList = response.records;
             this.total = response.total;
             this.loading = false;
           }
@@ -245,12 +238,12 @@
       // 状态修改
       changeStatus(row) {
         let text = row.status === "0" ? "启用" : "停用";
-        this.$confirm('确认要"' + text + '""' + row.gdsCode + '"编码吗?', "警告", {
+        this.$confirm('确认要' + text + '' + row.otaSiteCodeName + '编码吗?', "警告", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning"
         }).then(function() {
-          return changeOtaSiteStatus(row.id, row.status);
+          return changeSiteConfigStatus(row.id, row.status);
         }).then(() => {
           this.msgSuccess(text + "成功");
         }).catch(function() {
@@ -267,8 +260,8 @@
         this.form = {
           otaCode: undefined,
           otaSiteCode: undefined,
-          otaSiteCname: undefined,
-          otaSiteEname: undefined,
+          otaSiteCodeName: undefined,
+          otaSiteCodeName: undefined,
           status: "0",
           remark: undefined
         };
@@ -301,7 +294,7 @@
       handleUpdate(row) {
         this.reset();
         const id = row.id || this.ids;
-        getOtaSite(id).then(response => {
+        getSiteConfig(id).then(response => {
           this.form = response.data;
           this.open = true;
           this.title = "修改OTA站点";
@@ -312,7 +305,7 @@
         this.$refs["form"].validate(valid => {
           if (valid) {
             if (this.form.id != undefined) {
-              updateOtaSite(this.form).then(response => {
+              updateSiteConfig(this.form).then(response => {
                 if (response.code === 200) {
                   this.msgSuccess("修改成功");
                   this.open = false;
@@ -320,7 +313,7 @@
                 }
               });
             } else {
-              addOtaSite(this.form).then(response => {
+              addSiteConfig(this.form).then(response => {
                 if (response.code === 200) {
                   this.msgSuccess("新增成功");
                   this.open = false;
@@ -339,7 +332,7 @@
           cancelButtonText: "取消",
           type: "warning"
         }).then(function() {
-          return delOtaSite(ids);
+          return delSiteConfig(ids);
         }).then(() => {
           this.getList();
           this.msgSuccess("删除成功");
