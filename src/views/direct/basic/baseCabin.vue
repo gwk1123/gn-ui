@@ -1,29 +1,20 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" v-show="showSearch" :inline="true">
-      <el-form-item label="出发地" prop="depCity">
+      <el-form-item label="航司" prop="airline">
         <el-input
-          v-model="queryParams.depCity"
-          placeholder="请输入出发地"
+          v-model="queryParams.airline"
+          placeholder="请输入航司"
           clearable
           size="small"
           style="width: 240px"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="目的地" prop="arrCity">
-        <el-input
-          v-model="queryParams.arrCity"
-          placeholder="请输入目的地"
-          clearable
-          size="small"
-          style="width: 240px"
-        />
-      </el-form-item>
       <el-form-item label="状态" prop="status">
         <el-select
           v-model="queryParams.status"
-          placeholder="路由状态"
+          placeholder=""
           clearable
           size="small"
           style="width: 240px"
@@ -35,18 +26,6 @@
             :value="dict.dictValue"
           />
         </el-select>
-      </el-form-item>
-      <el-form-item label="创建时间">
-        <el-date-picker
-          v-model="dateRange"
-          size="small"
-          style="width: 240px"
-          value-format="yyyy-MM-dd"
-          type="daterange"
-          range-separator="-"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
-        ></el-date-picker>
       </el-form-item>
       <el-form-item>
         <el-button type="cyan" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -61,7 +40,7 @@
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['direct/route_config/add']"
+          v-hasPermi="['direct/base_cabin/add']"
         >新增</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -71,7 +50,7 @@
           size="mini"
           :disabled="single"
           @click="handleUpdate"
-          v-hasPermi="['direct/route_config/edit']"
+          v-hasPermi="['direct/base_cabin/edit']"
         >修改</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -81,35 +60,32 @@
           size="mini"
           :disabled="multiple"
           @click="handleDelete"
-          v-hasPermi="['direct/route_config/remove']"
+          v-hasPermi="['direct/base_cabin/remove']"
         >删除</el-button>
       </el-col>
     </el-row>
 
-    <el-table v-loading="loading" :data="routeConfigList" @selection-change="handleSelectionChange">
+    <el-table border v-loading="loading" :data="baseCabinList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="id" prop="id" width="70" />
-      <el-table-column label="出发地" prop="origin" width="100" />
-      <el-table-column label="目的地" prop="destination" width="100" />
-      <el-table-column label="双向标识" prop="bothWaysFlag" width="80" />
-      <el-table-column label="search配置号" prop="searchOfficeNo" width="150" />
-      <el-table-column label="verify配置号" prop="verifyOfficeNo" width="150" />
-      <el-table-column label="order配置号" prop="orderOfficeNo" width="150" />
-      <el-table-column label="状态" align="center" width="80">
+      <el-table-column label="id" prop="id" width="120" />
+      <el-table-column label="航司" prop="airline" width="100" />
+      <el-table-column label="舱等" prop="cabinGrade" width="100" />
+      <el-table-column label="子舱位" prop="cabin" width="100" />
+      <el-table-column label="状态" align="center" width="100">
         <template slot-scope="scope">
           <el-switch
             v-model="scope.row.status"
             active-value="0"
             inactive-value="1"
-            @change="changeStatus(scope.row)"
+            @change="handleStatusChange(scope.row)"
           ></el-switch>
         </template>
       </el-table-column>
-<!--      <el-table-column label="创建时间" align="center" prop="createTime" width="80">-->
-<!--        <template slot-scope="scope">-->
-<!--          <span>{{ parseTime(scope.row.createTime) }}</span>-->
-<!--        </template>-->
-<!--      </el-table-column>-->
+      <el-table-column label="创建时间" align="center" prop="createTime" width="180">
+        <template slot-scope="scope">
+          <span>{{ parseTime(scope.row.createTime) }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -117,14 +93,14 @@
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['direct/route_config/edit']"
+            v-hasPermi="['direct/base_cabin/edit']"
           >修改</el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['direct/route_config/remove']"
+            v-hasPermi="['direct/base_cabin/remove']"
           >删除</el-button>
         </template>
       </el-table-column>
@@ -141,25 +117,14 @@
     <!-- 添加或修改角色配置对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="出发地" prop="origin">
-          <el-input v-model="form.origin" placeholder="请输入大写字母" />
+        <el-form-item label="航司" prop="airline">
+          <el-input v-model="form.airline" placeholder="请输入航司二字码" />
         </el-form-item>
-        <el-form-item label="目的地" prop="destination">
-          <el-input v-model="form.destination" placeholder="请输入大写字母" />
+        <el-form-item label="舱等" prop="cabinGrade">
+          <el-input v-model="form.cabinGrade" placeholder="请输入舱等" />
         </el-form-item>
-        <el-form-item label="双向标识" prop="bothWaysFlag">
-          <el-input v-model="form.bothWaysFlag" placeholder="只能录入1或2" />
-        </el-form-item>
-        <el-form-item label="search配置号" prop="searchOfficeNo">
-          <el-input v-model="form.searchOfficeNo" placeholder="多个逗号隔开 如1G-xxx/1A-xxx" />
-        </el-form-item>
-
-        <el-form-item label="verify配置号" prop="verifyOfficeNo">
-          <el-input v-model="form.verifyOfficeNo" placeholder="多个逗号隔开 如1G-xxx/1A-xxx" />
-        </el-form-item>
-
-        <el-form-item label="order配置号" prop="orderOfficeNo">
-          <el-input v-model="form.orderOfficeNo" placeholder="多个逗号隔开 如1G-xxx/1A-xxx" />
+        <el-form-item label="子舱位" prop="cabin">
+          <el-input v-model="form.cabin" placeholder="请输入子舱位" />
         </el-form-item>
 
         <el-form-item label="状态">
@@ -184,10 +149,10 @@
 </template>
 
 <script>
-  import { listRouteConfig, getRouteConfig, delRouteConfig, addRouteConfig, updateRouteConfig, changeRouteConfigStatus } from "@/api/direct/basic/routeConfig";
+  import { listBaseCabin, getBaseCabin, delBaseCabin, addBaseCabin, updateBaseCabin, changeBaseCabinStatus } from "@/api/direct/basic/baseCabin";
 
   export default {
-    name: "RouteConfig",
+    name: "BaseCabin",
     data() {
       return {
         // 遮罩层
@@ -202,8 +167,8 @@
         showSearch: true,
         // 总条数
         total: 0,
-        // OtaSite表格数据
-        routeConfigList: [],
+        // OTA表格数据
+        baseCabinList: [],
         // 弹出层标题
         title: "",
         // 是否显示弹出层
@@ -216,25 +181,22 @@
         queryParams: {
           current: 1,
           size: 10,
-          depCity: undefined,
-          arrCity: undefined,
+          otaCode: undefined,
+          otaCname: undefined,
           status: undefined
         },
         // 表单参数
         form: {},
         // 表单校验
         rules: {
-          bothWaysFlag: [
-            { required: true, message: "双向标识不能为空", trigger: "blur" }
+          airline: [
+            { required: true, message: "航司不能为空", trigger: "blur" }
           ],
-          searchOfficeNo: [
-            { required: true, message: "search配置号不能为空", trigger: "blur" }
+          cabinGrade: [
+            { required: true, message: "舱等不能为空", trigger: "blur" }
           ],
-          verifyOfficeNo: [
-            { required: true, message: "verify配置号不能为空", trigger: "blur" }
-          ],
-          orderOfficeNo: [
-            { required: true, message: "order配置号不能为空", trigger: "blur" }
+          cabin: [
+            { required: true, message: "子舱位不能为空", trigger: "blur" }
           ]
         }
       };
@@ -249,24 +211,24 @@
       /** 查询角色列表 */
       getList() {
         this.loading = true;
-        listRouteConfig(this.addDateRange(this.queryParams, this.dateRange)).then(
+        listBaseCabin(this.addDateRange(this.queryParams, this.dateRange)).then(
           responseData => {
             const response = responseData.data;
-            this.routeConfigList = response.records;
+            this.baseCabinList = response.records;
             this.total = response.total;
             this.loading = false;
           }
         );
       },
-      // 状态修改
-      changeStatus(row) {
+      // 角色状态修改
+      handleStatusChange(row) {
         let text = row.status === "0" ? "启用" : "停用";
-        this.$confirm('确认要"' + text + '""' + row.gdsCode + '"编码吗?', "警告", {
+        this.$confirm('确认要"' + text + '""' + row.otaCode + '"编码吗?', "警告", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning"
         }).then(function() {
-          return changeRouteConfigStatus(row.id, row.status);
+          return changeBaseCabinStatus(row.id, row.status);
         }).then(() => {
           this.msgSuccess(text + "成功");
         }).catch(function() {
@@ -281,12 +243,9 @@
       // 表单重置
       reset() {
         this.form = {
-          depCity: undefined,
-          arrCity: undefined,
-          bothWaysFlag: undefined,
-          searchOfficeNo: undefined,
-          verifyOfficeNo: undefined,
-          orderOfficeNo: undefined,
+          airline: undefined,
+          cabinGrade: undefined,
+          cabin: undefined,
           status: "0",
           remark: undefined
         };
@@ -313,16 +272,16 @@
       handleAdd() {
         this.reset();
         this.open = true;
-        this.title = "添加航线路由";
+        this.title = "添加站点";
       },
       /** 修改按钮操作 */
       handleUpdate(row) {
         this.reset();
         const id = row.id || this.ids;
-        getRouteConfig(id).then(response => {
+        getBaseCabin(id).then(response => {
           this.form = response.data;
           this.open = true;
-          this.title = "修改航线路由";
+          this.title = "修改站点";
         });
       },
       /** 提交按钮 */
@@ -330,7 +289,7 @@
         this.$refs["form"].validate(valid => {
           if (valid) {
             if (this.form.id != undefined) {
-              updateRouteConfig(this.form).then(response => {
+              updateBaseCabin(this.form).then(response => {
                 if (response.code === 200) {
                   this.msgSuccess("修改成功");
                   this.open = false;
@@ -338,7 +297,7 @@
                 }
               });
             } else {
-              addRouteConfig(this.form).then(response => {
+              addBaseCabin(this.form).then(response => {
                 if (response.code === 200) {
                   this.msgSuccess("新增成功");
                   this.open = false;
@@ -357,7 +316,7 @@
           cancelButtonText: "取消",
           type: "warning"
         }).then(function() {
-          return delRouteConfig(ids);
+          return delBaseCabin(ids);
         }).then(() => {
           this.getList();
           this.msgSuccess("删除成功");
