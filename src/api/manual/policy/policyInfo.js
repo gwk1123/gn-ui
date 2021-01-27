@@ -1,57 +1,57 @@
 import request from '@/utils/request'
 
 // 查询GDS列表
-export function listOtaRule(query) {
+export function listPolicyInfo(query) {
   return request({
-    url: '/direct/ota_rule/page',
+    url: '/manual/policy_info/page',
     method: 'get',
     params: query
   })
 }
 
 // 查询GDS详细
-export function getOtaRule(id) {
+export function getPolicyInfo(id) {
   return request({
-    url: '/direct/ota_rule/' + id,
+    url: '/manual/policy_info/' + id,
     method: 'get'
   })
 }
 
 // 新增GDS
-export function addOtaRule(data) {
+export function addPolicyInfo(data) {
   return request({
-    url: '/direct/ota_rule',
+    url: '/manual/policy_info',
     method: 'post',
     data: data
   })
 }
 
 // 修改GDS
-export function updateOtaRule(data) {
+export function updatePolicyInfo(data) {
   return request({
-    url: '/direct/ota_rule',
+    url: '/manual/policy_info',
     method: 'put',
     data: data
   })
 }
 
 // GDS状态修改
-export function changeOtaRuleStatus(id, status) {
+export function changePolicyInfoStatus(id, status) {
   const data = {
     id,
     status
   }
   return request({
-    url: '/direct/ota_rule/changeStatus',
+    url: '/manual/policy_info/changeStatus',
     method: 'put',
     data: data
   })
 }
 
 // 删除GDS
-export function delOtaRule(id) {
+export function delPolicyInfo(id) {
   return request({
-    url: '/direct/ota_rule/' + id,
+    url: '/manual/policy_info/' + id,
     method: 'delete'
   })
 }

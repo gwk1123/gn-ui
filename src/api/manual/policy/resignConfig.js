@@ -1,57 +1,57 @@
 import request from '@/utils/request'
 
 // 查询GDS列表
-export function listPolicyInfo(query) {
+export function listResignConfig(query) {
   return request({
-    url: '/direct/policy_info/page',
+    url: '/manual/resign_config/page',
     method: 'get',
     params: query
   })
 }
 
 // 查询GDS详细
-export function getPolicyInfo(id) {
+export function getResignConfig(id) {
   return request({
-    url: '/direct/policy_info/' + id,
+    url: '/manual/resign_config/' + id,
     method: 'get'
   })
 }
 
 // 新增GDS
-export function addPolicyInfo(data) {
+export function addResignConfig(data) {
   return request({
-    url: '/direct/policy_info',
+    url: '/manual/resign_config',
     method: 'post',
     data: data
   })
 }
 
 // 修改GDS
-export function updatePolicyInfo(data) {
+export function updateResignConfig(data) {
   return request({
-    url: '/direct/policy_info',
+    url: '/manual/resign_config',
     method: 'put',
     data: data
   })
 }
 
 // GDS状态修改
-export function changePolicyInfoStatus(id, status) {
+export function changeResignConfig(id, status) {
   const data = {
     id,
     status
   }
   return request({
-    url: '/direct/policy_info/changeStatus',
+    url: '/manual/resign_config/changeStatus',
     method: 'put',
     data: data
   })
 }
 
 // 删除GDS
-export function delPolicyInfo(id) {
+export function delResignConfig(id) {
   return request({
-    url: '/direct/policy_info/' + id,
+    url: '/manual/resign_config/' + id,
     method: 'delete'
   })
 }

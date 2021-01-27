@@ -3,7 +3,7 @@ import request from '@/utils/request'
 // 查询BaseCabin列表
 export function listBaseCabin(query) {
   return request({
-    url: '/direct/base_cabin/page',
+    url: '/manual/base_cabin/page',
     method: 'get',
     params: query
   })
@@ -12,7 +12,7 @@ export function listBaseCabin(query) {
 // 查询BaseCabin详细
 export function getBaseCabin(id) {
   return request({
-    url: '/direct/base_cabin/' + id,
+    url: '/manual/base_cabin/' + id,
     method: 'get'
   })
 }
@@ -20,7 +20,7 @@ export function getBaseCabin(id) {
 // 新增BaseCabin
 export function addBaseCabin(data) {
   return request({
-    url: '/direct/base_cabin',
+    url: '/manual/base_cabin',
     method: 'post',
     data: data
   })
@@ -29,7 +29,7 @@ export function addBaseCabin(data) {
 // 修改BaseCabin
 export function updateBaseCabin(data) {
   return request({
-    url: '/direct/base_cabin',
+    url: '/manual/base_cabin',
     method: 'put',
     data: data
   })
@@ -42,7 +42,7 @@ export function changeBaseCabinStatus(id, status) {
     status
   }
   return request({
-    url: '/direct/base_cabin/changeStatus',
+    url: '/manual/base_cabin/changeStatus',
     method: 'put',
     data: data
   })
@@ -51,7 +51,7 @@ export function changeBaseCabinStatus(id, status) {
 // 删除BaseCabin
 export function delBaseCabin(id) {
   return request({
-    url: '/direct/base_cabin/' + id,
+    url: '/manual/base_cabin/' + id,
     method: 'delete'
   })
 }

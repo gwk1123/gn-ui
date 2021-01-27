@@ -87,7 +87,7 @@
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['direct/policy_info/add']"
+          v-hasPermi="['manual/policy_info/add']"
         >新增</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -97,7 +97,7 @@
           size="mini"
           :disabled="single"
           @click="handleUpdate"
-          v-hasPermi="['direct/policy_info/edit']"
+          v-hasPermi="['manual/policy_info/edit']"
         >修改</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -107,7 +107,7 @@
           size="mini"
           :disabled="multiple"
           @click="handleDelete"
-          v-hasPermi="['direct/policy_info/remove']"
+          v-hasPermi="['manual/policy_info/remove']"
         >删除</el-button>
       </el-col>
     </el-row>
@@ -142,14 +142,14 @@
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['direct/policy_info/edit']"
+            v-hasPermi="['manual/policy_info/edit']"
           >修改</el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['direct/policy_info/remove']"
+            v-hasPermi="['manual/policy_info/remove']"
           >删除</el-button>
         </template>
       </el-table-column>
@@ -287,7 +287,7 @@
                 style="width: 240px"
               >
                 <el-option
-                  v-for="dict in directPolicyPermitOptions"
+                  v-for="dict in manualPolicyPermitOptions"
                   :key="dict.dictValue"
                   :label="dict.dictLabel"
                   :value="dict.dictValue"
@@ -314,7 +314,7 @@
                 style="width: 240px"
               >
                 <el-option
-                  v-for="dict in directPolicyPermitOptions"
+                  v-for="dict in manualPolicyPermitOptions"
                   :key="dict.dictValue"
                   :label="dict.dictLabel"
                   :value="dict.dictValue"
@@ -348,7 +348,7 @@
                 style="width: 240px"
               >
                 <el-option
-                  v-for="dict in directPolicyPermitOptions"
+                  v-for="dict in manualPolicyPermitOptions"
                   :key="dict.dictValue"
                   :label="dict.dictLabel"
                   :value="dict.dictValue"
@@ -647,7 +647,7 @@
 </template>
 
 <script>
-  import { listPolicyInfo, getPolicyInfo, delPolicyInfo, addPolicyInfo, updatePolicyInfo, changePolicyInfoStatus } from "@/api/direct/policy/policyInfo";
+  import { listPolicyInfo, getPolicyInfo, delPolicyInfo, addPolicyInfo, updatePolicyInfo, changePolicyInfoStatus } from "@/api/manual/policy/policyInfo";
 
   export default {
     name: "PolicyInfo",
@@ -675,7 +675,7 @@
         dateRange: [],
         // 状态数据字典
         statusOptions: [],
-        directPolicyPermitOptions: [],
+        manualPolicyPermitOptions: [],
         sibeTripTypeOptions: [],
         sibePriceTypeOptions: [],
         sibeProductTypeOptions: [],
@@ -714,8 +714,8 @@
       this.getDicts("sys_normal_disable").then(response => {
         this.statusOptions = response.data;
       });
-      this.getDicts("direct_policy_permit").then(response => {
-        this.directPolicyPermitOptions = response.data;
+      this.getDicts("manual_policy_permit").then(response => {
+        this.manualPolicyPermitOptions = response.data;
       });
       this.getDicts("sibe_trip_type").then(response => {
         this.sibeTripTypeOptions = response.data;

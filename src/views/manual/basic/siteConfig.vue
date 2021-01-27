@@ -53,7 +53,7 @@
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['direct/site_config/add']"
+          v-hasPermi="['manual/site_config/add']"
         >新增</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -63,7 +63,7 @@
           size="mini"
           :disabled="single"
           @click="handleUpdate"
-          v-hasPermi="['direct/site_config/edit']"
+          v-hasPermi="['manual/site_config/edit']"
         >修改</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -73,7 +73,7 @@
           size="mini"
           :disabled="multiple"
           @click="handleDelete"
-          v-hasPermi="['direct/site_config/remove']"
+          v-hasPermi="['manual/site_config/remove']"
         >删除</el-button>
       </el-col>
     </el-row>
@@ -108,14 +108,14 @@
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['direct/site_config/edit']"
+            v-hasPermi="['manual/site_config/edit']"
           >修改</el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['direct/site_config/remove']"
+            v-hasPermi="['manual/site_config/remove']"
           >删除</el-button>
         </template>
       </el-table-column>
@@ -167,7 +167,7 @@
 </template>
 
 <script>
-  import { listSiteConfig, getSiteConfig, delSiteConfig, addSiteConfig, updateSiteConfig, changeSiteConfigStatus } from "@/api/direct/basic/siteConfig";
+  import { listSiteConfig, getSiteConfig, delSiteConfig, addSiteConfig, updateSiteConfig, changeSiteConfigStatus } from "@/api/manual/basic/siteConfig";
 
   export default {
     name: "SiteConfig",

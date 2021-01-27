@@ -52,7 +52,7 @@
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['direct/ota_rule/add']"
+          v-hasPermi="['manual/ota_rule/add']"
         >新增</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -62,7 +62,7 @@
           size="mini"
           :disabled="single"
           @click="handleUpdate"
-          v-hasPermi="['direct/ota_rule/edit']"
+          v-hasPermi="['manual/ota_rule/edit']"
         >修改</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -72,7 +72,7 @@
           size="mini"
           :disabled="multiple"
           @click="handleDelete"
-          v-hasPermi="['direct/ota_rule/remove']"
+          v-hasPermi="['manual/ota_rule/remove']"
         >删除</el-button>
       </el-col>
     </el-row>
@@ -104,14 +104,14 @@
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['direct/ota_rule/edit']"
+            v-hasPermi="['manual/ota_rule/edit']"
           >修改</el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['direct/ota_rule/remove']"
+            v-hasPermi="['manual/ota_rule/remove']"
           >删除</el-button>
         </template>
       </el-table-column>
@@ -353,7 +353,7 @@
 </template>
 
 <script >
-  import { listOtaRule, getOtaRule, delOtaRule, addOtaRule, updateOtaRule, changeOtaRuleStatus } from "@/api/direct/policy/otaRule";
+  import { listOtaRule, getOtaRule, delOtaRule, addOtaRule, updateOtaRule, changeOtaRuleStatus } from "@/api/manual/policy/otaRule";
   export default {
     data() {
       return {
@@ -397,7 +397,7 @@
     },
     created() {
       this.getList();
-      this.getDicts("direct_rule_type").then(response => {
+      this.getDicts("manual_rule_type").then(response => {
         this.ruleOptions = response.data;
       });
       this.getDicts("sys_normal_disable").then(response => {

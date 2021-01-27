@@ -1,56 +1,49 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" v-show="showSearch" :inline="true">
-      <el-form-item label="类型" prop="type">
+      <el-form-item label="产品类型" prop="productType">
         <el-input
-          v-model="queryParams.type"
-          placeholder="请输入类型"
+          v-model="queryParams.productType"
+          placeholder="请输入产品类型"
           clearable
           size="small"
           style="width: 240px"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="航司" prop="airline">
+      <el-form-item label="运价类型" prop="priceType">
         <el-input
-          v-model="queryParams.airline"
-          placeholder="请输入航司二字码"
+          v-model="queryParams.priceType"
+          placeholder="请输入运价类型"
           clearable
           size="small"
           style="width: 240px"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="舱位" prop="cabin">
+      <el-form-item label="行程类型" prop="tripType">
         <el-input
-          v-model="queryParams.cabin"
-          placeholder="请输入舱位"
+          v-model="queryParams.tripType"
+          placeholder="请输入行程类型"
           clearable
           size="small"
           style="width: 240px"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="出发地" prop="depCity">
+
+      <el-form-item label="是否中转" prop="permitTransit">
         <el-input
-          v-model="queryParams.depCity"
-          placeholder="请输入出发地"
+          v-model="queryParams.permitTransit"
+          placeholder="请输入是否中转"
           clearable
           size="small"
           style="width: 240px"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="目的地" prop="arrCity">
-        <el-input
-          v-model="queryParams.arrCity"
-          placeholder="请输入目的地"
-          clearable
-          size="small"
-          style="width: 240px"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
+
+
       <el-form-item label="状态" prop="status">
         <el-select
           v-model="queryParams.status"
@@ -67,7 +60,6 @@
           />
         </el-select>
       </el-form-item>
-
       <el-form-item>
         <el-button type="cyan" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
@@ -81,7 +73,7 @@
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['direct/resign_config/add']"
+          v-hasPermi="['manual/policy_global/add']"
         >新增</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -91,7 +83,7 @@
           size="mini"
           :disabled="single"
           @click="handleUpdate"
-          v-hasPermi="['direct/resign_config/edit']"
+          v-hasPermi="['manual/policy_global/edit']"
         >修改</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -101,19 +93,28 @@
           size="mini"
           :disabled="multiple"
           @click="handleDelete"
-          v-hasPermi="['direct/resign_config/remove']"
+          v-hasPermi="['manual/policy_global/remove']"
         >删除</el-button>
       </el-col>
     </el-row>
 
-    <el-table v-loading="loading" :data="resignConfigList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="policyGlobalList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="id" prop="id" width="120" />
-      <el-table-column label="类型" prop="type" width="100" />
+      <el-table-column label="GDS类型" prop="bookGdsChannel" width="100" />
+      <el-table-column label="产品类型" prop="productType" width="100" />
+      <el-table-column label="运价类型" prop="priceType" width="100" />
       <el-table-column label="航司" prop="airline" width="100" />
-      <el-table-column label="舱位" prop="cabin" width="100" />
-      <el-table-column label="出发地" prop="depCity" width="100" />
-      <el-table-column label="目的地" prop="arrCity" width="100" />
+      <el-table-column label="行程类型" prop="tripType" width="100" />
+      <el-table-column label="是否共享" prop="permitCodeShare" width="100" />
+      <el-table-column label="是否混合" prop="permitInterline" width="100" />
+      <el-table-column label="是否中转" prop="permitTransit" width="100" />
+      <el-table-column label="成人票面留钱" prop="adultPrice" width="100" />
+      <el-table-column label="成人税费留钱" prop="adultTax" width="100" />
+      <el-table-column label="儿童票面留钱" prop="childPrice" width="100" />
+      <el-table-column label="儿童税费留钱" prop="childTax" width="100" />
+      <el-table-column label="销售开始时间" prop="saleStartTime" width="100" />
+      <el-table-column label="销售结束时间" prop="saleEndTime" width="100" />
       <el-table-column label="状态" align="center" width="100">
         <template slot-scope="scope">
           <el-switch
@@ -124,11 +125,6 @@
           ></el-switch>
         </template>
       </el-table-column>
-      <el-table-column label="创建时间" align="center" prop="createTime" width="180">
-        <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.createTime) }}</span>
-        </template>
-      </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -136,14 +132,14 @@
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['direct/resign_config/edit']"
+            v-hasPermi="['manual/policy_global/edit']"
           >修改</el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['direct/resign_config/remove']"
+            v-hasPermi="['manual/policy_global/remove']"
           >删除</el-button>
         </template>
       </el-table-column>
@@ -158,22 +154,91 @@
     />
 
     <!-- 添加或修改角色配置对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :title="title" :visible.sync="open" width="800px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="类型" prop="type">
-          <el-input v-model="form.type" placeholder="请输入类型" />
+        <el-row>
+          <el-col :span="12">
+        <el-form-item label="GDS类型" prop="bookGdsChannel">
+          <el-input v-model="form.bookGdsChannel" placeholder="请输入OTA编码" />
         </el-form-item>
+          </el-col>
+          <el-col :span="12">
         <el-form-item label="航司" prop="airline">
-          <el-input v-model="form.airline" placeholder="请输入航司" />
+          <el-input v-model="form.airline" placeholder="请输入航司二字码" />
         </el-form-item>
-        <el-form-item label="舱位" prop="cabin">
-          <el-input v-model="form.cabin" placeholder="请输入舱位" />
+          </el-col>
+        </el-row>
+
+        <el-row>
+          <el-col :span="12">
+        <el-form-item label="产品类型" prop="productType">
+          <el-input v-model="form.productType" placeholder="请输入OTA英文名" />
         </el-form-item>
-        <el-form-item label="出发地" prop="depCity">
-          <el-input v-model="form.depCity" placeholder="请输入出发地" />
+          </el-col>
+          <el-col :span="12">
+        <el-form-item label="运价类型" prop="priceType">
+          <el-input v-model="form.priceType" placeholder="请输入OTA全中文名" />
         </el-form-item>
-        <el-form-item label="目的地" prop="arrCity">
-          <el-input v-model="form.arrCity"  placeholder="请输入目的地" />
+          </el-col>
+        </el-row>
+
+        <el-row>
+          <el-col :span="12">
+        <el-form-item label="行程类型" prop="permitCodeShare">
+          <el-input v-model="form.permitCodeShare"  placeholder="请输入OTA全英文名" />
+        </el-form-item>
+          </el-col>
+          <el-col :span="12">
+        <el-form-item label="是否共享" prop="gdsFullEname">
+          <el-input v-model="form.otaFullEname"  placeholder="请输入OTA全英文名" />
+        </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row>
+          <el-col :span="12">
+        <el-form-item label="是否混合" prop="permitInterline">
+          <el-input v-model="form.permitInterline"  placeholder="请输入OTA全英文名" />
+        </el-form-item>
+          </el-col>
+          <el-col :span="12">
+        <el-form-item label="是否中转" prop="permitTransit">
+          <el-input v-model="form.permitTransit"  placeholder="请输入OTA全英文名" />
+        </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row>
+          <el-col :span="12">
+        <el-form-item label="成人票面留钱" prop="adultPrice">
+          <el-input v-model="form.adultPrice"  placeholder="请输入OTA全英文名" />
+        </el-form-item>
+          </el-col>
+          <el-col :span="12">
+        <el-form-item label="成人税费留钱" prop="adultTax">
+          <el-input v-model="form.adultTax"  placeholder="请输入OTA全英文名" />
+        </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row>
+          <el-col :span="12">
+        <el-form-item label="儿童票面留钱" prop="childPrice">
+          <el-input v-model="form.childPrice"  placeholder="请输入OTA全英文名" />
+        </el-form-item>
+          </el-col>
+          <el-col :span="12">
+          <el-form-item label="儿童税费留钱" prop="childTax">
+          <el-input v-model="form.childTax"  placeholder="请输入OTA全英文名" />
+        </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-form-item label="销售开始时间" prop="saleStartTime">
+          <el-input v-model="form.saleStartTime"  placeholder="请输入OTA全英文名" />
+        </el-form-item>
+        <el-form-item label="销售结束时间" prop="saleEndTime">
+          <el-input v-model="form.saleEndTime"  placeholder="请输入OTA全英文名" />
         </el-form-item>
 
         <el-form-item label="状态">
@@ -198,10 +263,10 @@
 </template>
 
 <script>
-  import { listResignConfig, getResignConfig, delResignConfig, addResignConfig, updateResignConfig, changeResignConfig } from "@/api/direct/policy/resignConfig";
+  import { listPolicyGlobal, getPolicyGlobal, delPolicyGlobal, addPolicyGlobal, updatePolicyGlobal, changePolicyGlobalStatus } from "@/api/manual/policy/policyGlobal";
 
   export default {
-    name: "ResignConfig",
+    name: "Ota",
     data() {
       return {
         // 遮罩层
@@ -217,7 +282,7 @@
         // 总条数
         total: 0,
         // OTA表格数据
-        resignConfigList: [],
+        policyGlobalList: [],
         // 弹出层标题
         title: "",
         // 是否显示弹出层
@@ -230,19 +295,26 @@
         queryParams: {
           current: 1,
           size: 10,
-          type: undefined,
+          productType: undefined,
+          priceType: undefined,
           airline: undefined,
-          cabin: undefined,
-          depCity: undefined,
-          arrCity: undefined
+          tripType: undefined,
+          permitTransit: undefined,
+          status: undefined
         },
         // 表单参数
         form: {},
         // 表单校验
         rules: {
-          type: [
-            { required: true, message: "类型不能为空", trigger: "blur" }
-          ]
+          // otaCode: [
+          //   { required: true, message: "OTA编码不能为空", trigger: "blur" }
+          // ],
+          // otaCname: [
+          //   { required: true, message: "OTA中文名不能为空", trigger: "blur" }
+          // ],
+          // otaEname: [
+          //   { required: true, message: "OTA英文名不能为空", trigger: "blur" }
+          // ]
         }
       };
     },
@@ -256,10 +328,10 @@
       /** 查询角色列表 */
       getList() {
         this.loading = true;
-        listResignConfig(this.addDateRange(this.queryParams, this.dateRange)).then(
+        listPolicyGlobal(this.addDateRange(this.queryParams, this.dateRange)).then(
           responseData => {
             const response = responseData.data;
-            this.resignConfigList = response.records;
+            this.policyGlobalList = response.records;
             this.total = response.total;
             this.loading = false;
           }
@@ -273,7 +345,7 @@
           cancelButtonText: "取消",
           type: "warning"
         }).then(function() {
-          return changeResignConfig(row.id, row.status);
+          return changePolicyGlobalStatus(row.id, row.status);
         }).then(() => {
           this.msgSuccess(text + "成功");
         }).catch(function() {
@@ -288,11 +360,20 @@
       // 表单重置
       reset() {
         this.form = {
-          type: undefined,
+          bookGdsChannel: undefined,
+          productType: undefined,
+          priceType: undefined,
           airline: undefined,
-          cabin: undefined,
-          depCity: undefined,
-          arrCity: undefined,
+          tripType: undefined,
+          permitCodeShare: undefined,
+          permitInterline: undefined,
+          permitTransit: undefined,
+          adultPrice: undefined,
+          adultTax: undefined,
+          childPrice: undefined,
+          childTax: undefined,
+          saleStartTime: undefined,
+          saleEndTime: undefined,
           status: "0",
           remark: undefined
         };
@@ -325,7 +406,7 @@
       handleUpdate(row) {
         this.reset();
         const id = row.id || this.ids;
-        getResignConfig(id).then(response => {
+        getPolicyGlobal(id).then(response => {
           this.form = response.data;
           this.open = true;
           this.title = "修改站点";
@@ -335,8 +416,13 @@
       submitForm: function() {
         this.$refs["form"].validate(valid => {
           if (valid) {
+            const path = this.$route.path;
+            //跟据路由的路径获取平台和站点
+            const otaStr = path.split("/")[2];
+            this.form.otaCode = (otaStr.split("_")[0]).toUpperCase( );
+            this.form.otaSiteCode = (otaStr.split("_")[1]).toUpperCase( );
             if (this.form.id != undefined) {
-              updateResignConfig(this.form).then(response => {
+              updatePolicyGlobal(this.form).then(response => {
                 if (response.code === 200) {
                   this.msgSuccess("修改成功");
                   this.open = false;
@@ -344,7 +430,7 @@
                 }
               });
             } else {
-              addResignConfig(this.form).then(response => {
+              addPolicyGlobal(this.form).then(response => {
                 if (response.code === 200) {
                   this.msgSuccess("新增成功");
                   this.open = false;
@@ -363,7 +449,7 @@
           cancelButtonText: "取消",
           type: "warning"
         }).then(function() {
-          return delResignConfig(ids);
+          return delPolicyGlobal(ids);
         }).then(() => {
           this.getList();
           this.msgSuccess("删除成功");

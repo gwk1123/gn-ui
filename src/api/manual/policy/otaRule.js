@@ -1,57 +1,57 @@
 import request from '@/utils/request'
 
 // 查询GDS列表
-export function listAllAirports(query) {
+export function listOtaRule(query) {
   return request({
-    url: '/direct/all_airports/page',
+    url: '/manual/ota_rule/page',
     method: 'get',
     params: query
   })
 }
 
 // 查询GDS详细
-export function getAllAirports(id) {
+export function getOtaRule(id) {
   return request({
-    url: '/direct/all_airports/' + id,
+    url: '/manual/ota_rule/' + id,
     method: 'get'
   })
 }
 
 // 新增GDS
-export function addAllAirports(data) {
+export function addOtaRule(data) {
   return request({
-    url: '/direct/all_airports',
+    url: '/manual/ota_rule',
     method: 'post',
     data: data
   })
 }
 
 // 修改GDS
-export function updateAllAirports(data) {
+export function updateOtaRule(data) {
   return request({
-    url: '/direct/all_airports',
+    url: '/manual/ota_rule',
     method: 'put',
     data: data
   })
 }
 
 // GDS状态修改
-export function changeAllAirports(id, status) {
+export function changeOtaRuleStatus(id, status) {
   const data = {
     id,
     status
   }
   return request({
-    url: '/direct/all_airports/changeStatus',
+    url: '/manual/ota_rule/changeStatus',
     method: 'put',
     data: data
   })
 }
 
 // 删除GDS
-export function delAllAirports(id) {
+export function delOtaRule(id) {
   return request({
-    url: '/direct/all_airports/' + id,
+    url: '/manual/ota_rule/' + id,
     method: 'delete'
   })
 }

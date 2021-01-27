@@ -1,29 +1,20 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" v-show="showSearch" :inline="true">
-      <el-form-item label="出发地" prop="depAirport">
+      <el-form-item label="航司" prop="airline">
         <el-input
-          v-model="queryParams.depAirport"
-          placeholder="请输入出发地"
+          v-model="queryParams.airline"
+          placeholder="请输入航司"
           clearable
           size="small"
           style="width: 240px"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="目的地" prop="arrAirport">
-        <el-input
-          v-model="queryParams.arrAirport"
-          placeholder="请输入目的地"
-          clearable
-          size="small"
-          style="width: 240px"
-        />
-      </el-form-item>
       <el-form-item label="状态" prop="status">
         <el-select
           v-model="queryParams.status"
-          placeholder="路由状态"
+          placeholder=""
           clearable
           size="small"
           style="width: 240px"
@@ -35,18 +26,6 @@
             :value="dict.dictValue"
           />
         </el-select>
-      </el-form-item>
-      <el-form-item label="创建时间">
-        <el-date-picker
-          v-model="dateRange"
-          size="small"
-          style="width: 240px"
-          value-format="yyyy-MM-dd"
-          type="daterange"
-          range-separator="-"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
-        ></el-date-picker>
       </el-form-item>
       <el-form-item>
         <el-button type="cyan" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -61,7 +40,7 @@
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['direct/base_air_route/add']"
+          v-hasPermi="['manual/base_cabin/add']"
         >新增</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -71,7 +50,7 @@
           size="mini"
           :disabled="single"
           @click="handleUpdate"
-          v-hasPermi="['direct/base_air_route/edit']"
+          v-hasPermi="['manual/base_cabin/edit']"
         >修改</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -81,25 +60,30 @@
           size="mini"
           :disabled="multiple"
           @click="handleDelete"
-          v-hasPermi="['direct/base_air_route/remove']"
+          v-hasPermi="['manual/base_cabin/remove']"
         >删除</el-button>
       </el-col>
     </el-row>
 
-    <el-table border v-loading="loading" :data="baseAirRouteList" @selection-change="handleSelectionChange">
+    <el-table border v-loading="loading" :data="baseCabinList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="id" prop="id" width="70" />
-      <el-table-column label="出发地" prop="depAirport" width="100" />
-      <el-table-column label="目的地" prop="arrAirport" width="100" />
-      <el-table-column label="航司" prop="airline" width="80" />
-      <el-table-column label="状态" align="center" width="80">
+      <el-table-column label="id" prop="id" width="120" />
+      <el-table-column label="航司" prop="airline" width="100" />
+      <el-table-column label="舱等" prop="cabinGrade" width="100" />
+      <el-table-column label="子舱位" prop="cabin" width="100" />
+      <el-table-column label="状态" align="center" width="100">
         <template slot-scope="scope">
           <el-switch
             v-model="scope.row.status"
             active-value="0"
             inactive-value="1"
-            @change="changeStatus(scope.row)"
+            @change="handleStatusChange(scope.row)"
           ></el-switch>
+        </template>
+      </el-table-column>
+      <el-table-column label="创建时间" align="center" prop="createTime" width="180">
+        <template slot-scope="scope">
+          <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
@@ -109,14 +93,14 @@
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['direct/base_air_route/edit']"
+            v-hasPermi="['manual/base_cabin/edit']"
           >修改</el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['direct/base_air_route/remove']"
+            v-hasPermi="['manual/base_cabin/remove']"
           >删除</el-button>
         </template>
       </el-table-column>
@@ -133,14 +117,14 @@
     <!-- 添加或修改角色配置对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="出发地" prop="depAirport">
-          <el-input v-model="form.depAirport" placeholder="请输入大写字母" />
-        </el-form-item>
-        <el-form-item label="目的地" prop="arrAirport">
-          <el-input v-model="form.arrAirport" placeholder="请输入大写字母" />
-        </el-form-item>
         <el-form-item label="航司" prop="airline">
-          <el-input v-model="form.airline" placeholder="只能录入航司二字码" />
+          <el-input v-model="form.airline" placeholder="请输入航司二字码" />
+        </el-form-item>
+        <el-form-item label="舱等" prop="cabinGrade">
+          <el-input v-model="form.cabinGrade" placeholder="请输入舱等" />
+        </el-form-item>
+        <el-form-item label="子舱位" prop="cabin">
+          <el-input v-model="form.cabin" placeholder="请输入子舱位" />
         </el-form-item>
 
         <el-form-item label="状态">
@@ -165,10 +149,10 @@
 </template>
 
 <script>
-  import { listBaseAirRoute, getBaseAirRoute, delBaseAirRoute, addBaseAirRoute, updateBaseAirRoute, changeBaseAirRouteStatus } from "@/api/direct/basic/baseAirRoute";
+  import { listBaseCabin, getBaseCabin, delBaseCabin, addBaseCabin, updateBaseCabin, changeBaseCabinStatus } from "@/api/manual/basic/baseCabin";
 
   export default {
-    name: "BaseAirRoute",
+    name: "BaseCabin",
     data() {
       return {
         // 遮罩层
@@ -183,8 +167,8 @@
         showSearch: true,
         // 总条数
         total: 0,
-        // OtaSite表格数据
-        baseAirRouteList: [],
+        // OTA表格数据
+        baseCabinList: [],
         // 弹出层标题
         title: "",
         // 是否显示弹出层
@@ -197,8 +181,8 @@
         queryParams: {
           current: 1,
           size: 10,
-          depAirport: undefined,
-          arrAirport: undefined,
+          otaCode: undefined,
+          otaCname: undefined,
           status: undefined
         },
         // 表单参数
@@ -208,11 +192,11 @@
           airline: [
             { required: true, message: "航司不能为空", trigger: "blur" }
           ],
-          depAirport: [
-            { required: true, message: "出发地不能为空", trigger: "blur" }
+          cabinGrade: [
+            { required: true, message: "舱等不能为空", trigger: "blur" }
           ],
-          arrAirport: [
-            { required: true, message: "目的地不能为空", trigger: "blur" }
+          cabin: [
+            { required: true, message: "子舱位不能为空", trigger: "blur" }
           ]
         }
       };
@@ -227,24 +211,24 @@
       /** 查询角色列表 */
       getList() {
         this.loading = true;
-        listBaseAirRoute(this.addDateRange(this.queryParams, this.dateRange)).then(
+        listBaseCabin(this.addDateRange(this.queryParams, this.dateRange)).then(
           responseData => {
             const response = responseData.data;
-            this.baseAirRouteList = response.records;
+            this.baseCabinList = response.records;
             this.total = response.total;
             this.loading = false;
           }
         );
       },
-      // 状态修改
-      changeStatus(row) {
+      // 角色状态修改
+      handleStatusChange(row) {
         let text = row.status === "0" ? "启用" : "停用";
-        this.$confirm('确认要"' + text + '""' + row.gdsCode + '"编码吗?', "警告", {
+        this.$confirm('确认要"' + text + '""' + row.otaCode + '"编码吗?', "警告", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning"
         }).then(function() {
-          return changeBaseAirRouteStatus(row.id, row.status);
+          return changeBaseCabinStatus(row.id, row.status);
         }).then(() => {
           this.msgSuccess(text + "成功");
         }).catch(function() {
@@ -260,8 +244,8 @@
       reset() {
         this.form = {
           airline: undefined,
-          depAirport: undefined,
-          arrAirport: undefined,
+          cabinGrade: undefined,
+          cabin: undefined,
           status: "0",
           remark: undefined
         };
@@ -288,16 +272,16 @@
       handleAdd() {
         this.reset();
         this.open = true;
-        this.title = "添加航线路由";
+        this.title = "添加站点";
       },
       /** 修改按钮操作 */
       handleUpdate(row) {
         this.reset();
         const id = row.id || this.ids;
-        getBaseAirRoute(id).then(response => {
+        getBaseCabin(id).then(response => {
           this.form = response.data;
           this.open = true;
-          this.title = "修改航司航线";
+          this.title = "修改站点";
         });
       },
       /** 提交按钮 */
@@ -305,7 +289,7 @@
         this.$refs["form"].validate(valid => {
           if (valid) {
             if (this.form.id != undefined) {
-              updateBaseAirRoute(this.form).then(response => {
+              updateBaseCabin(this.form).then(response => {
                 if (response.code === 200) {
                   this.msgSuccess("修改成功");
                   this.open = false;
@@ -313,7 +297,7 @@
                 }
               });
             } else {
-              addBaseAirRoute(this.form).then(response => {
+              addBaseCabin(this.form).then(response => {
                 if (response.code === 200) {
                   this.msgSuccess("新增成功");
                   this.open = false;
@@ -332,7 +316,7 @@
           cancelButtonText: "取消",
           type: "warning"
         }).then(function() {
-          return delBaseAirRoute(ids);
+          return delBaseCabin(ids);
         }).then(() => {
           this.getList();
           this.msgSuccess("删除成功");

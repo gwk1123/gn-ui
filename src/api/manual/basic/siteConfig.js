@@ -3,7 +3,7 @@ import request from '@/utils/request'
 // 查询GDS列表
 export function listSiteConfig(query) {
   return request({
-    url: '/direct/site_config/page',
+    url: '/manual/site_config/page',
     method: 'get',
     params: query
   })
@@ -12,7 +12,7 @@ export function listSiteConfig(query) {
 // 查询SiteConfig详细
 export function getSiteConfig(id) {
   return request({
-    url: '/direct/site_config/' + id,
+    url: '/manual/site_config/' + id,
     method: 'get'
   })
 }
@@ -20,7 +20,7 @@ export function getSiteConfig(id) {
 // 新增SiteConfig
 export function addSiteConfig(data) {
   return request({
-    url: '/direct/site_config',
+    url: '/manual/site_config',
     method: 'post',
     data: data
   })
@@ -29,7 +29,7 @@ export function addSiteConfig(data) {
 // 修改SiteConfig
 export function updateSiteConfig(data) {
   return request({
-    url: '/direct/site_config',
+    url: '/manual/site_config',
     method: 'put',
     data: data
   })
@@ -42,7 +42,7 @@ export function changeSiteConfigStatus(id, status) {
     status
   }
   return request({
-    url: '/direct/site_config/changeStatus',
+    url: '/manual/site_config/changeStatus',
     method: 'put',
     data: data
   })
@@ -51,7 +51,7 @@ export function changeSiteConfigStatus(id, status) {
 // 删除SiteConfig
 export function delSiteConfig(id) {
   return request({
-    url: '/direct/site_config/' + id,
+    url: '/manual/site_config/' + id,
     method: 'delete'
   })
 }

@@ -1,57 +1,57 @@
 import request from '@/utils/request'
 
 // 查询GDS列表
-export function listBaseAirRoute(query) {
+export function listPolicyGlobal(query) {
   return request({
-    url: '/direct/base_air_route/page',
+    url: '/manual/policy_global/page',
     method: 'get',
     params: query
   })
 }
 
 // 查询GDS详细
-export function getBaseAirRoute(id) {
+export function getPolicyGlobal(id) {
   return request({
-    url: '/direct/base_air_route/' + id,
+    url: '/manual/policy_global/' + id,
     method: 'get'
   })
 }
 
 // 新增GDS
-export function addBaseAirRoute(data) {
+export function addPolicyGlobal(data) {
   return request({
-    url: '/direct/base_air_route',
+    url: '/manual/policy_global',
     method: 'post',
     data: data
   })
 }
 
 // 修改GDS
-export function updateBaseAirRoute(data) {
+export function updatePolicyGlobal(data) {
   return request({
-    url: '/direct/base_air_route',
+    url: '/manual/policy_global',
     method: 'put',
     data: data
   })
 }
 
 // GDS状态修改
-export function changeBaseAirRouteStatus(id, status) {
+export function changePolicyGlobalStatus(id, status) {
   const data = {
     id,
     status
   }
   return request({
-    url: '/direct/base_air_route/changeStatus',
+    url: '/manual/policy_global/changeStatus',
     method: 'put',
     data: data
   })
 }
 
 // 删除GDS
-export function delBaseAirRoute(id) {
+export function delPolicyGlobal(id) {
   return request({
-    url: '/direct/base_air_route/' + id,
+    url: '/manual/policy_global/' + id,
     method: 'delete'
   })
 }

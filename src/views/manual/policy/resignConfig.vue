@@ -1,10 +1,50 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" v-show="showSearch" :inline="true">
-      <el-form-item label="GDS编码" prop="gdsCode">
+      <el-form-item label="类型" prop="type">
         <el-input
-          v-model="queryParams.gdsCode"
-          placeholder="请输入GDS编码"
+          v-model="queryParams.type"
+          placeholder="请输入类型"
+          clearable
+          size="small"
+          style="width: 240px"
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="航司" prop="airline">
+        <el-input
+          v-model="queryParams.airline"
+          placeholder="请输入航司二字码"
+          clearable
+          size="small"
+          style="width: 240px"
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="舱位" prop="cabin">
+        <el-input
+          v-model="queryParams.cabin"
+          placeholder="请输入舱位"
+          clearable
+          size="small"
+          style="width: 240px"
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="出发地" prop="depCity">
+        <el-input
+          v-model="queryParams.depCity"
+          placeholder="请输入出发地"
+          clearable
+          size="small"
+          style="width: 240px"
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="目的地" prop="arrCity">
+        <el-input
+          v-model="queryParams.arrCity"
+          placeholder="请输入目的地"
           clearable
           size="small"
           style="width: 240px"
@@ -27,18 +67,7 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="创建时间">
-        <el-date-picker
-          v-model="dateRange"
-          size="small"
-          style="width: 240px"
-          value-format="yyyy-MM-dd"
-          type="daterange"
-          range-separator="-"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
-        ></el-date-picker>
-      </el-form-item>
+
       <el-form-item>
         <el-button type="cyan" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
@@ -52,7 +81,7 @@
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['direct/gds/add']"
+          v-hasPermi="['manual/resign_config/add']"
         >新增</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -62,7 +91,7 @@
           size="mini"
           :disabled="single"
           @click="handleUpdate"
-          v-hasPermi="['direct/gds/edit']"
+          v-hasPermi="['manual/resign_config/edit']"
         >修改</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -72,19 +101,19 @@
           size="mini"
           :disabled="multiple"
           @click="handleDelete"
-          v-hasPermi="['direct/gds/remove']"
+          v-hasPermi="['manual/resign_config/remove']"
         >删除</el-button>
       </el-col>
     </el-row>
 
-    <el-table v-loading="loading" :data="gdsList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="resignConfigList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="id" prop="id" width="120" />
-      <el-table-column label="GDS编码" prop="gdsCode" width="120" />
-      <el-table-column label="GDS中文名" prop="gdsCname" :show-overflow-tooltip="true" width="150" />
-      <el-table-column label="GDS英文名" prop="gdsEname" :show-overflow-tooltip="true" width="150" />
-      <el-table-column label="GDS中文全名" prop="gdsFullCname" :show-overflow-tooltip="true" width="150" />
-      <el-table-column label="GDS英文全名" prop="gdsFullEname" :show-overflow-tooltip="true" width="150" />
+      <el-table-column label="类型" prop="type" width="100" />
+      <el-table-column label="航司" prop="airline" width="100" />
+      <el-table-column label="舱位" prop="cabin" width="100" />
+      <el-table-column label="出发地" prop="depCity" width="100" />
+      <el-table-column label="目的地" prop="arrCity" width="100" />
       <el-table-column label="状态" align="center" width="100">
         <template slot-scope="scope">
           <el-switch
@@ -107,14 +136,14 @@
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['direct/gds/edit']"
+            v-hasPermi="['manual/resign_config/edit']"
           >修改</el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['direct/gds/remove']"
+            v-hasPermi="['manual/resign_config/remove']"
           >删除</el-button>
         </template>
       </el-table-column>
@@ -131,34 +160,34 @@
     <!-- 添加或修改角色配置对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-           <el-form-item label="GDS编码" prop="gdsCode">
-            <el-input v-model="form.gdsCode" placeholder="请输入GDS编码" />
-           </el-form-item>
-          <el-form-item label="GDS中文名" prop="gdsCname">
-            <el-input v-model="form.gdsCname" placeholder="请输入GDS中文名" />
-          </el-form-item>
-          <el-form-item label="GDS英文名" prop="gdsEname">
-            <el-input v-model="form.gdsEname" placeholder="请输入GDS英文名" />
-          </el-form-item>
-          <el-form-item label="GDS全中文名" prop="gdsFullCname">
-            <el-input v-model="form.gdsFullCname" placeholder="请输入GDS全中文名" />
-          </el-form-item>
-          <el-form-item label="GDS全英文名" prop="gdsFullEname">
-            <el-input v-model="form.gdsFullEname"  placeholder="请输入GDS全英文名" />
-          </el-form-item>
+        <el-form-item label="类型" prop="type">
+          <el-input v-model="form.type" placeholder="请输入类型" />
+        </el-form-item>
+        <el-form-item label="航司" prop="airline">
+          <el-input v-model="form.airline" placeholder="请输入航司" />
+        </el-form-item>
+        <el-form-item label="舱位" prop="cabin">
+          <el-input v-model="form.cabin" placeholder="请输入舱位" />
+        </el-form-item>
+        <el-form-item label="出发地" prop="depCity">
+          <el-input v-model="form.depCity" placeholder="请输入出发地" />
+        </el-form-item>
+        <el-form-item label="目的地" prop="arrCity">
+          <el-input v-model="form.arrCity"  placeholder="请输入目的地" />
+        </el-form-item>
 
-          <el-form-item label="状态">
-            <el-radio-group v-model="form.status">
-              <el-radio
-                v-for="dict in statusOptions"
-                :key="dict.dictValue"
-                :label="dict.dictValue"
-              >{{dict.dictLabel}}</el-radio>
-            </el-radio-group>
-          </el-form-item>
-          <el-form-item label="备注">
-            <el-input v-model="form.remark" type="textarea" placeholder="请输入内容"></el-input>
-          </el-form-item>
+        <el-form-item label="状态">
+          <el-radio-group v-model="form.status">
+            <el-radio
+              v-for="dict in statusOptions"
+              :key="dict.dictValue"
+              :label="dict.dictValue"
+            >{{dict.dictLabel}}</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="备注">
+          <el-input v-model="form.remark" type="textarea" placeholder="请输入内容"></el-input>
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -169,10 +198,10 @@
 </template>
 
 <script>
-  import { listGds, getGds, delGds, addGds, updateGds, changeGdsStatus } from "@/api/direct/basic/gds";
+  import { listResignConfig, getResignConfig, delResignConfig, addResignConfig, updateResignConfig, changeResignConfig } from "@/api/manual/policy/resignConfig";
 
   export default {
-    name: "Gds",
+    name: "ResignConfig",
     data() {
       return {
         // 遮罩层
@@ -187,8 +216,8 @@
         showSearch: true,
         // 总条数
         total: 0,
-        // GDS表格数据
-        gdsList: [],
+        // OTA表格数据
+        resignConfigList: [],
         // 弹出层标题
         title: "",
         // 是否显示弹出层
@@ -201,22 +230,18 @@
         queryParams: {
           current: 1,
           size: 10,
-          gdsCode: undefined,
-          gdsCname: undefined,
-          status: undefined
+          type: undefined,
+          airline: undefined,
+          cabin: undefined,
+          depCity: undefined,
+          arrCity: undefined
         },
         // 表单参数
         form: {},
         // 表单校验
         rules: {
-          gdsCode: [
-            { required: true, message: "GDS编码不能为空", trigger: "blur" }
-          ],
-          gdsCname: [
-            { required: true, message: "GDS中文名不能为空", trigger: "blur" }
-          ],
-          gdsEname: [
-            { required: true, message: "GDS英文名不能为空", trigger: "blur" }
+          type: [
+            { required: true, message: "类型不能为空", trigger: "blur" }
           ]
         }
       };
@@ -231,9 +256,10 @@
       /** 查询角色列表 */
       getList() {
         this.loading = true;
-        listGds(this.addDateRange(this.queryParams, this.dateRange)).then(
-          response => {
-            this.gdsList = response.rows;
+        listResignConfig(this.addDateRange(this.queryParams, this.dateRange)).then(
+          responseData => {
+            const response = responseData.data;
+            this.resignConfigList = response.records;
             this.total = response.total;
             this.loading = false;
           }
@@ -242,12 +268,12 @@
       // 角色状态修改
       handleStatusChange(row) {
         let text = row.status === "0" ? "启用" : "停用";
-        this.$confirm('确认要"' + text + '""' + row.gdsCode + '"编码吗?', "警告", {
+        this.$confirm('确认要"' + text + '""' + row.otaCode + '"编码吗?', "警告", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning"
         }).then(function() {
-          return changeGdsStatus(row.id, row.status);
+          return changeResignConfig(row.id, row.status);
         }).then(() => {
           this.msgSuccess(text + "成功");
         }).catch(function() {
@@ -262,11 +288,11 @@
       // 表单重置
       reset() {
         this.form = {
-          gdsCode: undefined,
-          gdsCname: undefined,
-          gdsEname: undefined,
-          gdsFullCname: undefined,
-          gdsFullEname: undefined,
+          type: undefined,
+          airline: undefined,
+          cabin: undefined,
+          depCity: undefined,
+          arrCity: undefined,
           status: "0",
           remark: undefined
         };
@@ -293,16 +319,16 @@
       handleAdd() {
         this.reset();
         this.open = true;
-        this.title = "添加角色";
+        this.title = "添加站点";
       },
       /** 修改按钮操作 */
       handleUpdate(row) {
         this.reset();
         const id = row.id || this.ids;
-        getGds(id).then(response => {
+        getResignConfig(id).then(response => {
           this.form = response.data;
           this.open = true;
-          this.title = "修改角色";
+          this.title = "修改站点";
         });
       },
       /** 提交按钮 */
@@ -310,7 +336,7 @@
         this.$refs["form"].validate(valid => {
           if (valid) {
             if (this.form.id != undefined) {
-              updateGds(this.form).then(response => {
+              updateResignConfig(this.form).then(response => {
                 if (response.code === 200) {
                   this.msgSuccess("修改成功");
                   this.open = false;
@@ -318,7 +344,7 @@
                 }
               });
             } else {
-              addGds(this.form).then(response => {
+              addResignConfig(this.form).then(response => {
                 if (response.code === 200) {
                   this.msgSuccess("新增成功");
                   this.open = false;
@@ -337,7 +363,7 @@
           cancelButtonText: "取消",
           type: "warning"
         }).then(function() {
-          return delGds(ids);
+          return delResignConfig(ids);
         }).then(() => {
           this.getList();
           this.msgSuccess("删除成功");
