@@ -68,7 +68,7 @@
       </el-col>
     </el-row>
 
-    <el-table v-loading="loading" :data="commonPriceList" @selection-change="handleSelectionChange">
+    <el-table border v-loading="loading" :data="commonPriceList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="id" prop="id" width="100" />
       <el-table-column label="数据来源" prop="sourceType" width="100" />
