@@ -1,4 +1,3 @@
-
 <style>
   .el-card__header {
     background-color: #D9EDF7;
@@ -8,6 +7,7 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" v-show="showSearch" :inline="true">
+
       <el-form-item label="政策id" prop="id">
         <el-input
           v-model="queryParams.id"
@@ -18,24 +18,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="产品类型" prop="productType">
-        <el-input
-          v-model="queryParams.productType"
-          placeholder="请输入产品类型"
-          clearable
-          size="small"
-          style="width: 240px"
-        />
-      </el-form-item>
-      <el-form-item label="行程类型" prop="tripType">
-        <el-input
-          v-model="queryParams.tripType"
-          placeholder="请输入行程类型"
-          clearable
-          size="small"
-          style="width: 240px"
-        />
-      </el-form-item>
+
       <el-form-item label="航司" prop="airline">
         <el-input
           v-model="queryParams.airline"
@@ -49,7 +32,7 @@
       <el-form-item label="状态" prop="status">
         <el-select
           v-model="queryParams.status"
-          placeholder="状态"
+          placeholder="GDS状态"
           clearable
           size="small"
           style="width: 240px"
@@ -61,18 +44,6 @@
             :value="dict.dictValue"
           />
         </el-select>
-      </el-form-item>
-      <el-form-item label="创建时间">
-        <el-date-picker
-          v-model="dateRange"
-          size="small"
-          style="width: 240px"
-          value-format="yyyy-MM-dd"
-          type="daterange"
-          range-separator="-"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
-        ></el-date-picker>
       </el-form-item>
       <el-form-item>
         <el-button type="cyan" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -92,16 +63,6 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="success"
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['manual/policy_info/edit']"
-        >修改</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
           type="danger"
           icon="el-icon-delete"
           size="mini"
@@ -114,28 +75,32 @@
 
     <el-table v-loading="loading" :data="policyInfoList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="id" prop="id" width="70" />
-      <el-table-column label="出发地" prop="deptCity" width="100" />
-      <el-table-column label="目的地" prop="arrCity" width="100" />
-      <el-table-column label="航司" prop="airline" width="80" />
-      <el-table-column label="产品类型" prop="productType" width="150" />
-      <el-table-column label="行程类型" prop="tripType" width="150" />
-      <el-table-column label="去程旅行日期" prop="outboundDateRange" width="150" />
-      <el-table-column label="回程旅行日期" prop="inboundDateRange" width="150" />
-      <el-table-column label="是否中转" prop="permitTransit" width="150" />
-      <el-table-column label="是否联运" prop="permitInterline" width="150" />
-      <el-table-column label="是否共享" prop="permitCodeShare" width="150" />
-      <el-table-column label="状态" align="center" width="80">
+      <el-table-column label="id" prop="id" width="120" />
+      <el-table-column label="数据渠道" prop="channel" width="100" />
+      <el-table-column label="航司" prop="airline" width="100" />
+      <el-table-column label="出发地" prop="depAirport" width="100" />
+      <el-table-column label="抵达地" prop="arrAirport" width="100" />
+      <el-table-column label="销售开始日期" prop="saleStartDate" width="100" />
+      <el-table-column label="销售结束日期" prop="saleEndDate" width="100" />
+      <el-table-column label="班期限制" prop="weekLimit" width="100" />
+      <el-table-column label="产品类型" prop="productType" width="100" />
+      <el-table-column label="报价类型" prop="rePriceType" width="100" />
+      <el-table-column label="行程类型" prop="tripType" width="100" />
+      <el-table-column label="前返点" prop="beforeCommission" width="100" />
+      <el-table-column label="前返现金" prop="beforeAmount" width="100" />
+      <el-table-column label="后返点" prop="afterCommission" width="100" />
+      <el-table-column label="后返现金" prop="afterAmount" width="100" />
+      <el-table-column label="状态" align="center" width="100">
         <template slot-scope="scope">
           <el-switch
             v-model="scope.row.status"
             active-value="0"
             inactive-value="1"
-            @change="changeStatus(scope.row)"
+            @change="handleStatusChange(scope.row)"
           ></el-switch>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="150">
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
             size="mini"
@@ -163,466 +128,281 @@
       @pagination="getList"
     />
 
-    <!-- 添加或修改角色配置对话框 -->
+    <!-- 添加或修改配置对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="800px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-
-        <el-card >
-          <div slot="header" >
-            <span>航程信息</span>
-          </div>
-          <div>
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="订位GDS系统" prop="bookGdsChannel" label-width="150px">
-              <el-input v-model="form.bookGdsChannel" placeholder="请输入大写字母" width="100px" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="订位office号" prop="bookOfficeNo" label-width="150px">
-              <el-input v-model="form.bookOfficeNo" placeholder="请输入大写字母" width="100px" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="航司" prop="airline" label-width="150px">
-              <el-input v-model="form.airline" placeholder="请输入大写字母" width="100px" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="行程类型" prop="tripType">
-              <el-select
-                v-model="form.tripType"
-                placeholder="请选择下拉选择"
-                clearable
-                size="small"
-                style="width: 240px"
-              >
-                <el-option
-                  v-for="dict in sibeTripTypeOptions"
-                  :key="dict.dictValue"
-                  :label="dict.dictLabel"
-                  :value="dict.dictValue"
-                />
-              </el-select>
-            </el-form-item>
-          </el-col>
-        </el-row>
-
-        <el-row>
-          <el-col :span="12">
-        <el-form-item label="出发地" prop="deptCity" label-width="150px">
-          <el-input v-model="form.depCity" placeholder="请输入大写字母" width="100px" />
-        </el-form-item>
-          </el-col>
-          <el-col :span="12">
-        <el-form-item label="目的地" prop="arrCity" label-width="150px">
-          <el-input v-model="form.arrCity" placeholder="请输入大写字母" width="100px" />
-        </el-form-item>
-          </el-col>
-        </el-row>
-
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="出发地除外" prop="depCityExcept" label-width="150px">
-              <el-input v-model="form.depCityExcept" placeholder="请输入大写字母" width="100px" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="目的地除外" prop="arrCityExcept" label-width="150px">
-              <el-input v-model="form.arrCityExcept" placeholder="请输入大写字母" width="100px" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="适用舱位等级" prop="seatGrade" label-width="150px">
-              <el-input v-model="form.seatGrade" placeholder="请输入大写字母" width="100px" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="手工舱位(K位)" prop="manualSeatCabin" label-width="150px">
-              <el-input v-model="form.manualSeatCabin" placeholder="请输入大写字母" width="100px" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="适用舱位" prop="seatCabin" label-width="150px">
-              <el-input v-model="form.seatCabin" placeholder="请输入大写字母" width="100px" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="适用舱位除外" prop="seatCabinExcept" label-width="150px">
-              <el-input v-model="form.seatCabinExcept" placeholder="请输入大写字母" width="100px" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="可售航班" prop="availableFlight" label-width="150px">
-              <el-input v-model="form.availableFlight" placeholder="请输入数字" width="100px" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="禁售航班" prop="prohibitedFlight" label-width="150px">
-              <el-input v-model="form.prohibitedFlight" placeholder="请输入数字" width="100px" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="是否中转" prop="permitTransit">
-              <el-select
-                v-model="form.permitTransit"
-                placeholder="请选择下拉选择"
-                clearable
-                size="small"
-                style="width: 240px"
-              >
-                <el-option
-                  v-for="dict in manualPolicyPermitOptions"
-                  :key="dict.dictValue"
-                  :label="dict.dictLabel"
-                  :value="dict.dictValue"
-                />
-              </el-select>
-            </el-form-item>
-
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="指定转机点" prop="transferPoint" label-width="150px">
-              <el-input v-model="form.transferPoint" placeholder="请输入机场码" width="100px" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="是否共享航司" prop="permitCodeShare">
-              <el-select
-                v-model="form.permitCodeShare"
-                placeholder="请选择下拉选择"
-                clearable
-                size="small"
-                style="width: 240px"
-              >
-                <el-option
-                  v-for="dict in manualPolicyPermitOptions"
-                  :key="dict.dictValue"
-                  :label="dict.dictLabel"
-                  :value="dict.dictValue"
-                />
-              </el-select>
-            </el-form-item>
-          </el-col>
-        </el-row>
-
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="共享航司" prop="codeShareAirline" label-width="150px">
-              <el-input v-model="form.codeShareAirline" placeholder="请输入大写字母" width="100px" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="共享航司除外" prop="codeShareAirlineExcept" label-width="150px">
-              <el-input v-model="form.codeShareAirlineExcept" placeholder="请输入大写字母" width="100px" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="是否混合航司" prop="permitInterline">
-              <el-select
-                v-model="form.permitInterline"
-                placeholder="请选择下拉选择"
-                clearable
-                size="small"
-                style="width: 240px"
-              >
-                <el-option
-                  v-for="dict in manualPolicyPermitOptions"
-                  :key="dict.dictValue"
-                  :label="dict.dictLabel"
-                  :value="dict.dictValue"
-                />
-              </el-select>
-            </el-form-item>
-          </el-col>
-        </el-row>
-
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="混合航司" prop="interlineAirline" label-width="150px">
-              <el-input v-model="form.interlineAirline" placeholder="请输入大写字母" width="100px" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="混合航司除外" prop="interlineAirlineExcept" label-width="150px">
-              <el-input v-model="form.interlineAirlineExcept" placeholder="请输入大写字母" width="100px" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-       </div>
-      </el-card>
-
-
-        <el-card >
-          <div slot="header" >
-            <span>日期信息</span>
-          </div>
-          <div>
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="去程旅行日期" prop="depCityExcept" label-width="150px">
-              <el-input v-model="form.depCityExcept" placeholder="请输入大写字母" width="100px" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="回程旅行日期" prop="arrCityExcept" label-width="150px">
-              <el-input v-model="form.arrCityExcept" placeholder="请输入大写字母" width="100px" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="销售开始日期" prop="saleDateStart" label-width="150px">
-              <el-input v-model="form.saleDateStart" placeholder="请输入大写字母" width="300px" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="销售结束日期" prop="saleDateEnd" label-width="150px">
-              <el-input v-model="form.saleDateEnd" placeholder="请输入大写字母" width="300px" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="去程旅行日期除外" prop="outboundTravelDateExcept" label-width="150px">
-              <el-input v-model="form.outboundTravelDateExcept" placeholder="请输入大写字母" width="300px" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="回程旅行日期除外" prop="inboundTravelDateExcept" label-width="150px">
-              <el-input v-model="form.inboundTravelDateExcept" placeholder="请输入大写字母" width="300px" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="去程班期" prop="outboundDayTime" label-width="150px">
-              <el-input v-model="form.outboundDayTime" placeholder="请输入数字" width="300px" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="回程班期" prop="inboundDayTime" label-width="150px">
-              <el-input v-model="form.inboundDayTime" placeholder="请输入数字" width="300px" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="最小停留时间(分)" prop="minStay" label-width="150px">
-              <el-input v-model="form.retMinTime" placeholder="请输入数字" width="300px" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="最大停留时间(分)" prop="maxStay" label-width="150px">
-              <el-input v-model="form.retMaxTime" placeholder="请输入数字" width="300px" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="提前销售天数" prop="advanceSaleDay" label-width="150px">
-              <el-input v-model="form.advanceSaleDay" placeholder="请输入数字" width="300px" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-          </div>
-        </el-card>
-
-
         <el-card >
           <div slot="header" >
             <span>运价信息</span>
           </div>
           <div>
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="产品类型" prop="productType">
-              <el-select
-                v-model="form.productType"
-                placeholder="请选择下拉选择"
-                clearable
-                size="small"
-                style="width: 240px"
-              >
-                <el-option
-                  v-for="dict in sibeProductTypeOptions"
-                  :key="dict.dictValue"
-                  :label="dict.dictLabel"
-                  :value="dict.dictValue"
-                />
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="运价类型" prop="priceType">
-              <el-select
-                v-model="form.priceType"
-                placeholder="请选择下拉选择"
-                clearable
-                size="small"
-                style="width: 240px"
-              >
-                <el-option
-                  v-for="dict in sibePriceTypeOptions"
-                  :key="dict.dictValue"
-                  :label="dict.dictLabel"
-                  :value="dict.dictValue"
-                />
-              </el-select>
-            </el-form-item>
-          </el-col>
-        </el-row>
 
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="成人票面价(K位)" prop="manualAdultPrice" label-width="150px">
-              <el-input v-model="form.manualAdultPrice" placeholder="请输入数字" width="300px" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="成人税费(K位)" prop="manualAdultTax" label-width="150px">
-              <el-input v-model="form.manualAdultTax" placeholder="请输入数字" width="300px" />
-            </el-form-item>
-          </el-col>
-        </el-row>
 
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="成人票面留钱(普通)" prop="adultPrice" label-width="150px">
-              <el-input v-model="form.adultPrice" placeholder="请输入数字" width="300px" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="成人税费留钱(普通)" prop="adultTax" label-width="150px">
-              <el-input v-model="form.adultTax" placeholder="请输入数字" width="300px" />
-            </el-form-item>
-          </el-col>
-        </el-row>
+            <el-row>
+              <el-col :span="12">
+                <el-form-item label="数据来源" prop="sourceType">
+                  <el-select
+                    v-model="form.sourceType"
+                    placeholder="请选择下拉选择"
+                    clearable
+                    size="small"
+                    style="width: 240px"
+                  >
+                    <el-option
+                      v-for="dict in sourceTypeOptions"
+                      :key="dict.dictValue"
+                      :label="dict.dictLabel"
+                      :value="dict.dictValue"
+                    />
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="数据渠道" prop="channel">
+                  <el-select
+                    v-model="form.channel"
+                    placeholder="请选择下拉选择"
+                    clearable
+                    size="small"
+                    style="width: 240px"
+                  >
+                    <el-option
+                      v-for="dict in channelOptions"
+                      :key="dict.dictValue"
+                      :label="dict.dictLabel"
+                      :value="dict.dictValue"
+                    />
+                  </el-select>
+                </el-form-item>
+              </el-col>
+            </el-row>
 
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="返点%(普通)" prop="commition" label-width="150px">
-              <el-input v-model="form.commition" placeholder="请输入数字" width="300px" />
-            </el-form-item>
-          </el-col>
-        </el-row>
+            <el-row>
+              <el-col :span="12">
+                <el-form-item label="航司" prop="airline">
+                  <el-input v-model="form.airline" placeholder="请输入航司二字码" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="班期限制" prop="weekLimit">
+                  <el-input v-model="form.weekLimit" placeholder="请输入1/2/3/4/5/6/7" />
+                </el-form-item>
+              </el-col>
+            </el-row>
 
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="儿童票销售定价" prop="childPriceType" label-width="150px">
-              <el-input v-model="form.childPriceType" placeholder="请输入数字" width="300px" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="儿童折扣%" prop="childDiscount" label-width="150px">
-              <el-input v-model="form.childDiscount" placeholder="按百分比计算,只允许75%~99%" width="300px" />
-            </el-form-item>
-          </el-col>
-        </el-row>
+            <el-row>
+              <el-col :span="12">
+                <el-form-item label="出发地" prop="depAirport">
+                  <el-input v-model="form.depAirport"  placeholder="请输入机场三字码,多个用英文的/分开 999表示全国" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="抵达地" prop="arrAirport">
+                  <el-input v-model="form.arrAirport"  placeholder="请输入机场三字码,多个用英文的/分开 999表示全国" />
+                </el-form-item>
+              </el-col>
+            </el-row>
 
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="报销发票类型" prop="invoiceType" label-width="150px">
-              <el-input v-model="form.invoiceType" placeholder="请输入数字" width="300px" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="出票时限" prop="ticketDeadline" label-width="150px">
-              <el-input v-model="form.ticketDeadline" placeholder="请输入数字" width="300px" />
-            </el-form-item>
-          </el-col>
-        </el-row>
+            <el-row>
+              <el-col :span="12">
+                <el-form-item label="排除航线" prop="airRouteExcept">
+                  <el-input v-model="form.airRouteExcept"  placeholder="当机场999时适用 格式单向|999-SZX/双向|999-CAN/双向|999-HUZ/双向|999-ZUH" />
+                </el-form-item>
+              </el-col>
+            </el-row>
 
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="适用乘客国籍" prop="nationality" label-width="150px">
-              <el-input v-model="form.nationality" placeholder="请输入大写字母" width="300px" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="除外乘客国籍" prop="excludeNationality" label-width="150px">
-              <el-input v-model="form.excludeNationality" placeholder="请输入大写字母" width="300px" />
-            </el-form-item>
-          </el-col>
-        </el-row>
+            <el-row>
+              <el-col :span="12">
+                <el-form-item label="航班号限制" prop="flightNumLimit">
+                  <el-select
+                    v-model="form.flightNumLimit"
+                    placeholder="请选择下拉选择"
+                    clearable
+                    size="small"
+                    style="width: 240px"
+                  >
+                    <el-option
+                      v-for="dict in flightNumLimitOptions"
+                      :key="dict.dictValue"
+                      :label="dict.dictLabel"
+                      :value="dict.dictValue"
+                    />
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="航班号" prop="flightNum">
+                  <el-input v-model="form.flightNum"  placeholder="航班号(不包含航司二字码) 格式：123/234 多个用英文的/分开" />
+                </el-form-item>
+              </el-col>
+            </el-row>
+
+            <el-row>
+              <el-col :span="12">
+                <el-form-item label="舱位" prop="cabin">
+                  <el-input v-model="form.cabin"  placeholder="多个用英文的/分开" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="舱位排除" prop="cabinExcept">
+                  <el-input v-model="form.cabinExcept"  placeholder="多个用英文的/分开" />
+                </el-form-item>
+              </el-col>
+            </el-row>
+
+            <el-row>
+              <el-col :span="12">
+                <el-form-item label="销售时间" prop="field119">
+                  <el-date-picker type="daterange" v-model="form.saleDates" format="yyyy-MM-dd"
+                                  value-format="yyyy-MM-dd" :style="{width: '100%'}" start-placeholder="开始日期" end-placeholder="结束日期"
+                                  range-separator="至" clearable></el-date-picker>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="旅行时间" prop="field119">
+                  <el-date-picker type="daterange" v-model="form.travelDates" format="yyyy-MM-dd"
+                                  value-format="yyyy-MM-dd" :style="{width: '100%'}" start-placeholder="开始日期" end-placeholder="结束日期"
+                                  range-separator="至" clearable></el-date-picker>
+                </el-form-item>
+              </el-col>
+            </el-row>
+
+            <el-row>
+              <el-col :span="12">
+                <el-form-item label="适用起飞时间段" prop="depTimeLimit">
+                  <el-input v-model="form.depTimeLimit"  placeholder="格式 HHMM-HHMM 多个用英文的/分开" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="班期限制" prop="weekLimit">
+                  <el-input v-model="form.weekLimit"  placeholder="格式：1/2/3/4/5/6/7" />
+                </el-form-item>
+              </el-col>
+            </el-row>
+
+            <el-row>
+              <el-col :span="12">
+                <el-form-item label="最早提前出票时限" prop="beginValidDay">
+                  <el-input v-model="form.beginValidDay"  placeholder="最早提前出票时限 正整数，大于等于0" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="最晚提前出票时限" prop="latestValidDay">
+                  <el-input v-model="form.latestValidDay"  placeholder="最晚提前出票时限 正整数，大于等于0" />
+                </el-form-item>
+              </el-col>
+            </el-row>
+
+            <el-row>
+              <el-col :span="12">
+                <el-form-item label="政策工作时间" prop="workTimeLimit">
+                  <el-input v-model="form.workTimeLimit"  placeholder="政策工作时间限制 格式：00:00-23:59 多个用英文的/分开" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="产品类型" prop="productType">
+                  <el-input v-model="form.productType"  placeholder="产品类型" />
+                </el-form-item>
+              </el-col>
+            </el-row>
+
+            <el-row>
+              <el-col :span="12">
+                <el-form-item label="报价类型" prop="rePriceType">
+                  <el-select
+                    v-model="form.rePriceType"
+                    placeholder="请选择下拉选择"
+                    clearable
+                    size="small"
+                    style="width: 240px"
+                  >
+                    <el-option
+                      v-for="dict in rePriceTypeOptions"
+                      :key="dict.dictValue"
+                      :label="dict.dictLabel"
+                      :value="dict.dictValue"
+                    />
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="行程类型" prop="tripType">
+                  <el-select
+                    v-model="form.tripType"
+                    placeholder="请选择下拉选择"
+                    clearable
+                    size="small"
+                    style="width: 240px"
+                  >
+                    <el-option
+                      v-for="dict in tripTypeOptions"
+                      :key="dict.dictValue"
+                      :label="dict.dictLabel"
+                      :value="dict.dictValue"
+                    />
+                  </el-select>
+                </el-form-item>
+              </el-col>
+            </el-row>
+
+            <el-row>
+              <el-col :span="12">
+                <el-form-item label="最低票面价" prop="minTicketPrice">
+                  <el-input v-model="form.minTicketPrice"  placeholder="正整数，大于等于0" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="最高票面价" prop="maxTicketPrice">
+                  <el-input v-model="form.maxTicketPrice"  placeholder="正整数，大于等于0" />
+                </el-form-item>
+              </el-col>
+            </el-row>
+
           </div>
         </el-card>
 
         <el-card >
           <div slot="header" >
-            <span>行李额信息</span>
+            <span>价格信息</span>
           </div>
           <div>
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="行李额来源" prop="baggageType" label-width="150px">
-              <el-input v-model="form.baggageType" placeholder="请输入大写字母" width="300px" />
-            </el-form-item>
-          </el-col>
-        </el-row>
 
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="成人行李额件数" prop="adultBaggagePieces" label-width="150px">
-              <el-input v-model="form.adultBaggagePieces" placeholder="请输入数字" width="300px" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="成人行李额重量" prop="adultBaggageWeight" label-width="150px">
-              <el-input v-model="form.adultBaggageWeight" placeholder="请输入数字" width="300px" />
-            </el-form-item>
-          </el-col>
-        </el-row>
+            <el-row>
+              <el-col :span="12">
+                <el-form-item label="前返点" prop="beforeCommission">
+                  <el-input v-model="form.beforeCommission"  placeholder="单位%" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="前返现金" prop="beforeAmount">
+                  <el-input v-model="form.beforeAmount"  placeholder="正整数，大于等于0" />
+                </el-form-item>
+              </el-col>
+            </el-row>
 
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="儿童行李额件数" prop="childBaggagePieces" label-width="150px">
-              <el-input v-model="form.childBaggagePieces" placeholder="请输入大写字母" width="300px" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="儿童行李额重量" prop="childBaggageWeight" label-width="150px">
-              <el-input v-model="form.childBaggageWeight" placeholder="请输入大写字母" width="300px" />
-            </el-form-item>
-          </el-col>
-        </el-row>
+            <el-row>
+              <el-col :span="12">
+                <el-form-item label="后返点" prop="afterCommission">
+                  <el-input v-model="form.afterCommission"  placeholder="单位%" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="后返现金" prop="afterAmount">
+                  <el-input v-model="form.afterAmount"  placeholder="正整数，大于等于0" />
+                </el-form-item>
+              </el-col>
+            </el-row>
+
+            <el-row>
+              <el-col :span="12">
+                <el-form-item label="竞价空间" prop="bidSpace">
+                  <el-input v-model="form.bidSpace"  placeholder="正整数，大于等于0%" />
+                </el-form-item>
+              </el-col>
+            </el-row>
+
           </div>
         </el-card>
-
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="规则特别说明" prop="ticketRuleNotes" label-width="150px">
-              <el-input v-model="form.ticketRuleNotes" type="textarea" placeholder="请输入内容"
-                        width="300px" ></el-input>
-            </el-form-item>
-          </el-col>
-        </el-row>
 
 
         <el-form-item label="状态">
@@ -634,8 +414,8 @@
             >{{dict.dictLabel}}</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="备注">
-          <el-input v-model="form.remark" type="textarea" placeholder="请输入内容"></el-input>
+        <el-form-item label="出票备注" prop="ticketRemark">
+          <el-input v-model="form.ticketRemark" type="textarea" placeholder="请输入内容"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -665,7 +445,7 @@
         showSearch: true,
         // 总条数
         total: 0,
-        // OtaSite表格数据
+        // OTA表格数据
         policyInfoList: [],
         // 弹出层标题
         title: "",
@@ -675,36 +455,34 @@
         dateRange: [],
         // 状态数据字典
         statusOptions: [],
-        manualPolicyPermitOptions: [],
-        sibeTripTypeOptions: [],
-        sibePriceTypeOptions: [],
-        sibeProductTypeOptions: [],
+        sourceTypeOptions: [],
+        channelOptions: [],
+        flightNumLimitOptions: [],
+        rePriceTypeOptions: [],
+        tripTypeOptions: [],
         // 查询参数
         queryParams: {
           current: 1,
           size: 10,
-          depCity: undefined,
-          arrCity: undefined,
-          productType: undefined,
-          tripType: undefined,
-          airline: undefined,
+          // productType: undefined,
+          // priceType: undefined,
+          // airline: undefined,
+          // tripType: undefined,
+          // permitTransit: undefined,
           status: undefined
         },
         // 表单参数
         form: {},
         // 表单校验
         rules: {
-          // bothWaysFlag: [
-          //   { required: true, message: "双向标识不能为空", trigger: "blur" }
+          // otaCode: [
+          //   { required: true, message: "OTA编码不能为空", trigger: "blur" }
           // ],
-          // searchOfficeNo: [
-          //   { required: true, message: "search配置号不能为空", trigger: "blur" }
+          // otaCname: [
+          //   { required: true, message: "OTA中文名不能为空", trigger: "blur" }
           // ],
-          // verifyOfficeNo: [
-          //   { required: true, message: "verify配置号不能为空", trigger: "blur" }
-          // ],
-          // orderOfficeNo: [
-          //   { required: true, message: "order配置号不能为空", trigger: "blur" }
+          // otaEname: [
+          //   { required: true, message: "OTA英文名不能为空", trigger: "blur" }
           // ]
         }
       };
@@ -714,18 +492,22 @@
       this.getDicts("sys_normal_disable").then(response => {
         this.statusOptions = response.data;
       });
-      this.getDicts("manual_policy_permit").then(response => {
-        this.manualPolicyPermitOptions = response.data;
+      this.getDicts("manual_source_type").then(response => {
+        this.sourceTypeOptions = response.data;
       });
-      this.getDicts("sibe_trip_type").then(response => {
-        this.sibeTripTypeOptions = response.data;
+      this.getDicts("manual_channel").then(response => {
+        this.channelOptions = response.data;
       });
-      this.getDicts("sibe_price_type").then(response => {
-        this.sibePriceTypeOptions = response.data;
+      this.getDicts("manual_flight_num_limit").then(response => {
+        this.flightNumLimitOptions = response.data;
       });
-      this.getDicts("sibe_product_type").then(response => {
-        this.sibeProductTypeOptions = response.data;
+      this.getDicts("manual_re_price_type").then(response => {
+        this.rePriceTypeOptions = response.data;
       });
+      this.getDicts("manual_trip_type").then(response => {
+        this.tripTypeOptions = response.data;
+      });
+
     },
     methods: {
       /** 查询角色列表 */
@@ -740,10 +522,10 @@
           }
         );
       },
-      // 状态修改
-      changeStatus(row) {
+      // 角色状态修改
+      handleStatusChange(row) {
         let text = row.status === "0" ? "启用" : "停用";
-        this.$confirm('确认要"' + text + '""' + row.gdsCode + '"编码吗?', "警告", {
+        this.$confirm('确认要"' + text + '""' + row.otaCode + '"编码吗?', "警告", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning"
@@ -763,64 +545,35 @@
       // 表单重置
       reset() {
         this.form = {
-          bookOfficeNo: undefined,
-          bookGdsChannel: undefined,
-          productType: undefined,
-          tripType: "3",
+          sourceType: undefined,
+          channel: undefined,
           airline: undefined,
-          depCity: undefined,
-          arrCity: undefined,
-          depCityExcept: undefined,
-          arrCityExcept: undefined,
-          interlineAirline: undefined,
-          interlineAirlineExcept: undefined,
-          permitTransit: "3",
-          transferPoint: undefined,
-          permitCodeShare: "3",
-          permitInterline: "3",
-          invoiceType: undefined,
-          outboundDateStart: undefined,
-          outboundDateEnd: undefined,
-          inboundDateStart: undefined,
-          inboundDateEnd: undefined,
-          saleDateStart: undefined,
-          saleDateEnd: undefined,
-          outboundDayTime: undefined,
-          inboundDayTime: undefined,
-          outboundTravelDateExcept: undefined,
-          inboundTravelDateExcept: undefined,
-          seatGrade: undefined,
-          seatCabin: undefined,
-          seatCabinExcept: undefined,
-          commition: undefined,
-          adultPrice: undefined,
-          adultTax: undefined,
-          childPriceType: undefined,
-          childDiscount: undefined,
-          ticketRemark: undefined,
-          ticketDeadline: undefined,
-          nationality: undefined,
-          excludeNationality: undefined,
-          priceType: "3",
-          productType: "1",
-          ticketRuleNotes: undefined,
-          remark: undefined,
-          baggageType: undefined,
-          manualAdultPrice: undefined,
-          manualAdultTax: undefined,
-          prohibitedFlight: undefined,
-          availableFlight: undefined,
-          advanceSaleDay: undefined,
-          manualSeatCabin: undefined,
-          codeShareAirline: undefined,
-          codeShareAirlineExcept: undefined,
-          retMaxTime: undefined,
-          retMinTime: undefined,
-          adultBaggagePieces: undefined,
-          adultBaggageWeight: undefined,
-          childBaggagePieces: undefined,
-          childBaggageWeight: undefined,
-          status: "0"
+          arrAirport: undefined,
+          depAirport: undefined,
+          airRouteExcept: undefined,
+          flightNumLimit: "0",
+          flightNum: undefined,
+          cabin: undefined,
+          cabinExcept: undefined,
+          depTimeLimit: undefined,
+          weekLimit: undefined,
+          saleDates: undefined,
+          travelDates: undefined,
+          beginValidDay: undefined,
+          latestValidDay: undefined,
+          workTimeLimit: undefined,
+          productType: undefined,
+          rePriceType: "2",
+          tripType: "2",
+          minTicketPrice: undefined,
+          maxTicketPrice: undefined,
+          beforeCommission: undefined,
+          beforeAmount: undefined,
+          afterCommission: undefined,
+          afterAmount: undefined,
+          bidSpace: undefined,
+          status: "0",
+          ticketRemark: undefined
         };
         this.resetForm("form");
       },
@@ -845,7 +598,7 @@
       handleAdd() {
         this.reset();
         this.open = true;
-        this.title = "添加明细政策";
+        this.title = "添加站点";
       },
       /** 修改按钮操作 */
       handleUpdate(row) {
@@ -853,14 +606,8 @@
         const id = row.id || this.ids;
         getPolicyInfo(id).then(response => {
           this.form = response.data;
-          this.form.permitTransit = this.form.permitTransit.toString();
-          this.form.permitCodeShare = this.form.permitCodeShare.toString();
-          this.form.tripType = this.form.tripType.toString();
-          this.form.permitInterline = this.form.permitInterline.toString();
-          this.form.priceType = this.form.priceType.toString();
-          this.form.productType = this.form.productType.toString();
           this.open = true;
-          this.title = "修改明细政策";
+          this.title = "修改站点";
         });
       },
       /** 提交按钮 */
@@ -870,7 +617,7 @@
             const path = this.$route.path;
             //跟据路由的路径获取平台和站点
             const otaStr = path.split("/")[2];
-            this.form.otaCode = (otaStr.split("_")[0]).toUpperCase( );
+            // this.form.otaCode = (otaStr.split("_")[0]).toUpperCase( );
             this.form.otaSiteCode = (otaStr.split("_")[1]).toUpperCase( );
             if (this.form.id != undefined) {
               updatePolicyInfo(this.form).then(response => {
