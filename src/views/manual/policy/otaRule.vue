@@ -69,7 +69,7 @@
       <el-table-column label="id" prop="id" width="120" />
       <el-table-column label="数据来源" prop="sourceType" width="100" />
       <el-table-column label="渠道代码" prop="channel" width="100" />
-      <el-table-column label="规则类型" prop="bookGdsChannel" width="100" />
+      <el-table-column label="规则类型" prop="ruleType" width="100" />
       <el-table-column label="航司" prop="airline" width="100" />
       <el-table-column label="出发地" prop="depAirport" width="100" />
       <el-table-column label="目的地" prop="arrAirport" width="100" />
