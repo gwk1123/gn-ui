@@ -140,7 +140,7 @@
         </el-row>
 
 
-        <!--中转时间过滤，仅仅针对多程-->
+        <!--白名单 -->
         <div v-show ="this.queryParams.ruleType =='OTA-1' ">
 
           <el-row>
@@ -376,6 +376,53 @@
         </div>
 
 
+        <!--OTA发布价格-->
+        <div v-show ="this.queryParams.ruleType =='OTA-4' ">
+
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="数据来源" prop="sourceType">
+                <el-select
+                  v-model="form.sourceType"
+                  placeholder="请选择下拉选择"
+                  clearable
+                  size="small"
+                  style="width: 240px"
+                >
+                  <el-option
+                    v-for="dict in sourceTypeOptions"
+                    :key="dict.dictValue"
+                    :label="dict.dictLabel"
+                    :value="dict.dictValue"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="发布价格选择" prop="parameter1">
+                <el-select
+                  v-model="form.parameter1"
+                  placeholder="请选择下拉选择"
+                  clearable
+                  size="small"
+                  style="width: 240px"
+                >
+                  <el-option
+                    v-for="dict in priceOptions"
+                    :key="dict.dictValue"
+                    :label="dict.dictLabel"
+                    :value="dict.dictValue"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </div>
+
+
+
+
+
         <el-form-item label="状态">
           <el-radio-group v-model="form.status">
             <el-radio
@@ -432,6 +479,7 @@
         pnrOptions: [],
         patOptions: [],
         childFalyOptions: [],
+        priceOptions: []
         // 查询参数
         queryParams: {
           current: 1,
@@ -472,6 +520,10 @@
         this.patOptions = response.data;
         this.childFalyOptions = response.data;
       });
+      this.getDicts("RELEASE_PRICE_TYPE").then(response => {
+        this.priceOptions = response.data;
+      });
+
     },
     methods: {
       getList() {
