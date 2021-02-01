@@ -373,10 +373,7 @@
               </el-form-item>
             </el-col>
           </el-row>
-
         </div>
-
-
 
 
         <el-form-item label="状态">
@@ -453,11 +450,27 @@
     },
     created() {
       this.getList();
-      this.getDicts("manual_rule_type").then(response => {
+      this.getDicts("OTA_RULE_TYPE").then(response => {
         this.ruleOptions = response.data;
       });
       this.getDicts("sys_normal_disable").then(response => {
         this.statusOptions = response.data;
+      });
+
+      this.getDicts("CTRIP_POLICY").then(response => {
+        this.policyTypeOptions = response.data;
+      });
+      this.getDicts("SOURCE_TYPE").then(response => {
+        this.sourceTypeOptions = response.data;
+      });
+      this.getDicts("CHANNEL").then(response => {
+        this.channelOptions = response.data;
+      });
+      this.getDicts("sys_yes_no").then(response => {
+        this.payOptions = response.data;
+        this.pnrOptions = response.data;
+        this.patOptions = response.data;
+        this.childFalyOptions = response.data;
       });
     },
     methods: {
