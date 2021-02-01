@@ -1,9 +1,6 @@
 <template>
   <div class="app-container">
 
-
-
-
     <el-form :model="queryParams" ref="queryForm" v-show="showSearch" :inline="true">
           <el-form-item label="规则类型" prop="ruleType">
             <el-select
@@ -57,16 +54,6 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="success"
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['manual/ota_rule/edit']"
-        >修改</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
           type="danger"
           icon="el-icon-delete"
           size="mini"
@@ -80,13 +67,18 @@
     <el-table v-loading="loading" :data="otaRuleList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="id" prop="id" width="120" />
+      <el-table-column label="数据来源" prop="sourceType" width="100" />
+      <el-table-column label="渠道代码" prop="channel" width="100" />
       <el-table-column label="规则类型" prop="bookGdsChannel" width="100" />
-      <el-table-column label="出发地" prop="origin" width="100" />
-      <el-table-column label="目的地" prop="destination" width="100" />
-      <el-table-column label="双向标识" prop="bothWaysFlag" width="100" />
-      <el-table-column label="开始旅行日期" prop="travelPeriodFrom" width="100" />
-      <el-table-column label="结束旅行日期" prop="travelPeriodTo" width="100" />
+      <el-table-column label="航司" prop="airline" width="100" />
+      <el-table-column label="出发地" prop="depAirport" width="100" />
+      <el-table-column label="目的地" prop="arrAirport" width="100" />
+      <el-table-column label="舱位" prop="cabin" width="100" />
       <el-table-column label="自定义内容一" prop="parameter1" width="100" />
+      <el-table-column label="自定义内容一" prop="parameter2" width="100" />
+      <el-table-column label="自定义内容一" prop="parameter3" width="100" />
+      <el-table-column label="自定义内容一" prop="parameter4" width="100" />
+      <el-table-column label="自定义内容一" prop="parameter5" width="100" />
       <el-table-column label="状态" align="center" width="100">
         <template slot-scope="scope">
           <el-switch
@@ -149,184 +141,241 @@
 
 
         <!--中转时间过滤，仅仅针对多程-->
-        <div v-show ="this.queryParams.ruleType =='OTA-10' ">
+        <div v-show ="this.queryParams.ruleType =='OTA-1' ">
+
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="数据来源" prop="sourceType">
+                <el-select
+                  v-model="form.sourceType"
+                  placeholder="请选择下拉选择"
+                  clearable
+                  size="small"
+                  style="width: 240px"
+                >
+                  <el-option
+                    v-for="dict in sourceTypeOptions"
+                    :key="dict.dictValue"
+                    :label="dict.dictLabel"
+                    :value="dict.dictValue"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="数据渠道" prop="channel">
+                <el-select
+                  v-model="form.channel"
+                  placeholder="请选择下拉选择"
+                  clearable
+                  size="small"
+                  style="width: 240px"
+                >
+                  <el-option
+                    v-for="dict in channelOptions"
+                    :key="dict.dictValue"
+                    :label="dict.dictLabel"
+                    :value="dict.dictValue"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="航司" prop="airline" label-width="150px">
+                <el-input v-model="form.airline" placeholder="多个用英文的/分开" />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="舱位" prop="cabin" label-width="150px">
+                <el-input v-model="form.cabin" placeholder="多个用英文的/分开" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="出发地" prop="depAirport" label-width="150px">
+                <el-input v-model="form.depAirport" placeholder="出发机场码 多个用英文的/分开 999表示全国" />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="目的地" prop="arrAirport" label-width="150px">
+                <el-input v-model="form.arrAirport" placeholder="抵达机场码 多个用英文的/分开 999表示全国" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+
         <el-row>
           <el-col :span="12">
-            <el-form-item label="中转时间" prop="parameter1" label-width="150px">
-              <el-input v-model="form.parameter1" placeholder="请输入数字(分钟)" />
+            <el-form-item label="航班号" prop="parameter1" label-width="150px">
+              <el-input v-model="form.parameter1" placeholder="航班号(不包含航司二字码) 格式：123/234 多个用英文的/分开" />
             </el-form-item>
           </el-col>
         </el-row>
         </div>
 
-        <!--机场链接过滤，仅仅针对中转点，中转机场相同则不过滤-->
-        <div v-show ="this.queryParams.ruleType =='OTA-12' ">
+        <div v-show ="this.queryParams.ruleType =='OTA-3' ">
           <el-row>
             <el-col :span="12">
-              <el-form-item label="中转机场过滤" prop="parameter1" label-width="150px">
-                <el-radio-group v-model="form.parameter1">
-                  <el-radio
-                    v-for="dict in statusOptions"
+              <el-form-item label="数据来源" prop="sourceType">
+                <el-select
+                  v-model="form.sourceType"
+                  placeholder="请选择下拉选择"
+                  clearable
+                  size="small"
+                  style="width: 240px"
+                >
+                  <el-option
+                    v-for="dict in sourceTypeOptions"
                     :key="dict.dictValue"
-                    :label="dict.dictValue"
-                  >{{dict.dictLabel}}</el-radio>
-                </el-radio-group>
+                    :label="dict.dictLabel"
+                    :value="dict.dictValue"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="数据渠道" prop="channel">
+                <el-select
+                  v-model="form.channel"
+                  placeholder="请选择下拉选择"
+                  clearable
+                  size="small"
+                  style="width: 240px"
+                >
+                  <el-option
+                    v-for="dict in channelOptions"
+                    :key="dict.dictValue"
+                    :label="dict.dictLabel"
+                    :value="dict.dictValue"
+                  />
+                </el-select>
               </el-form-item>
             </el-col>
           </el-row>
+
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="航司" prop="airline" label-width="150px">
+                <el-input v-model="form.airline" placeholder="多个用英文的/分开" />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="推送的政策类型" prop="parameter1">
+                <el-select
+                  v-model="form.parameter1"
+                  placeholder="请选择下拉选择"
+                  clearable
+                  size="small"
+                  style="width: 240px"
+                >
+                  <el-option
+                    v-for="dict in policyTypeOptions"
+                    :key="dict.dictValue"
+                    :label="dict.dictLabel"
+                    :value="dict.dictValue"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="出发地" prop="depAirport" label-width="150px">
+                <el-input v-model="form.depAirport" placeholder="出发机场码 多个用英文的/分开 999表示全国" />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="目的地" prop="arrAirport" label-width="150px">
+                <el-input v-model="form.arrAirport" placeholder="抵达机场码 多个用英文的/分开 999表示全国" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="是否可以支付" prop="parameter2">
+                <el-select
+                  v-model="form.parameter2"
+                  placeholder="请选择下拉选择"
+                  clearable
+                  size="small"
+                  style="width: 240px"
+                >
+                  <el-option
+                    v-for="dict in payOptions"
+                    :key="dict.dictValue"
+                    :label="dict.dictLabel"
+                    :value="dict.dictValue"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="否可以生成PNR" prop="parameter3">
+                <el-select
+                  v-model="form.parameter3"
+                  placeholder="请选择下拉选择"
+                  clearable
+                  size="small"
+                  style="width: 240px"
+                >
+                  <el-option
+                    v-for="dict in pnrOptions"
+                    :key="dict.dictValue"
+                    :label="dict.dictLabel"
+                    :value="dict.dictValue"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="是否PAT校验" prop="parameter4">
+                <el-select
+                  v-model="form.parameter4"
+                  placeholder="请选择下拉选择"
+                  clearable
+                  size="small"
+                  style="width: 240px"
+                >
+                  <el-option
+                    v-for="dict in patOptions"
+                    :key="dict.dictValue"
+                    :label="dict.dictLabel"
+                    :value="dict.dictValue"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="儿童是否适用" prop="parameter5">
+                <el-select
+                  v-model="form.parameter5"
+                  placeholder="请选择下拉选择"
+                  clearable
+                  size="small"
+                  style="width: 240px"
+                >
+                  <el-option
+                    v-for="dict in childFalyOptions"
+                    :key="dict.dictValue"
+                    :label="dict.dictLabel"
+                    :value="dict.dictValue"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+
         </div>
 
-        <!--共享过滤-->
-       <!--如果填写了除外共享航司航班号,则判断航段中的销售航司是否处于除外列表中-->
-       <!--输入格式类似于AA100-500,600/BB200-400/AA700-->
-        <div v-show ="this.queryParams.ruleType =='OTA-13' ">
-          <el-row>
-              <el-form-item label="是否限制共享航司" prop="parameter1" label-width="150px">
-                <el-radio-group v-model="form.parameter1">
-                  <el-radio
-                    v-for="dict in statusOptions"
-                    :key="dict.dictValue"
-                    :label="dict.dictValue"
-                  >{{dict.dictLabel}}</el-radio>
-                </el-radio-group>
-              </el-form-item>
-          </el-row>
-          <el-row>
-            <el-col :span="16">
-              <el-form-item label="除外共享航司航班号" prop="parameter2" label-width="150px">
-                <el-input v-model="form.parameter2" type="textarea" placeholder="请输入格式类似于AA100-500,600/BB200-400/AA700"
-                          width="200px" ></el-input>
-              </el-form-item>
-            </el-col>
-          </el-row>
-        </div>
-
-            <!--限制混合航司-->
-        <div v-show ="this.queryParams.ruleType =='OTA-14' ">
-          <el-row>
-            <el-col :span="12">
-              <el-form-item label="限制混合航司" prop="parameter1" label-width="150px">
-                <el-radio-group v-model="form.parameter1">
-                  <el-radio
-                    v-for="dict in statusOptions"
-                    :key="dict.dictValue"
-                    :label="dict.dictValue"
-                  >{{dict.dictLabel}}</el-radio>
-                </el-radio-group>
-              </el-form-item>
-            </el-col>
-          </el-row>
-        </div>
-
-        <!--是否允许共享航司为空-->
-        <div v-show ="this.queryParams.ruleType =='OTA-16' ">
-          <el-row>
-            <el-col :span="14">
-              <el-form-item label="是否共享航司为空" prop="parameter1" label-width="150px">
-                <el-radio-group v-model="form.parameter1">
-                  <el-radio
-                    v-for="dict in statusOptions"
-                    :key="dict.dictValue"
-                    :label="dict.dictValue"
-                  >{{dict.dictLabel}}</el-radio>
-                </el-radio-group>
-              </el-form-item>
-            </el-col>
-          </el-row>
-        </div>
-
-       <!--限制中转次数-->
-        <div v-show ="this.queryParams.ruleType =='OTA-9' ">
-          <el-row>
-            <el-col :span="14">
-                <el-form-item label="限制中转次数" prop="parameter1" label-width="150px">
-                  <el-input v-model="form.parameter1" placeholder="请输入数字" />
-                </el-form-item>
-            </el-col>
-          </el-row>
-        </div>
-
-          <!--航司航线黑名单-->
-        <div v-show ="this.queryParams.ruleType =='OTA-33' ">
-          <el-row>
-            <el-col :span="12">
-              <el-form-item label="行程类型" prop="parameter1" label-width="150px">
-                <el-radio-group v-model="form.parameter1">
-                  <el-radio
-                    v-for="dict in statusOptions"
-                    :key="dict.dictValue"
-                    :label="dict.dictValue"
-                  >{{dict.dictLabel}}</el-radio>
-                </el-radio-group>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row>
-          <el-col :span="12">
-            <el-form-item label="双向标识" prop="bothWaysFlag" label-width="150px">
-              <el-radio-group v-model="form.bothWaysFlag">
-                <el-radio
-                  v-for="dict in statusOptions"
-                  :key="dict.dictValue"
-                  :label="dict.dictValue"
-                >{{dict.dictLabel}}</el-radio>
-              </el-radio-group>
-            </el-form-item>
-          </el-col>
-          </el-row>
-            <el-row>
-              <el-col :span="16">
-                <el-form-item label="出发地" prop="origin" label-width="150px">
-                  <el-input v-model="form.origin" type="textarea" placeholder="请输入字母，多个之间用户/分隔"
-                            width="200px" ></el-input>
-                </el-form-item>
-              </el-col>
-            </el-row>
-          <el-row>
-            <el-col :span="16">
-              <el-form-item label="目的地" prop="destination" label-width="150px">
-                <el-input v-model="form.destination" type="textarea" placeholder="请输入字母，多个之间用户/分隔"
-                          width="200px" ></el-input>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="16">
-              <el-form-item label="航司舱位" prop="destination" label-width="150px">
-                <el-input v-model="form.parameter2" type="textarea" placeholder="请输入格式如: CX(M/N/Y),MU(K)"
-                          width="200px" ></el-input>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="12">
-          <el-form-item label="开始旅行日期" prop="field102">
-            <el-date-picker v-model="form.travelPeriodFrom" format="yyyy-MM-dd" value-format="yyyy-MM-dd"
-                            :style="{width: '100%'}" placeholder="请选择日期选择" clearable></el-date-picker>
-          </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item label="结束旅行日期" prop="field102">
-                <el-date-picker v-model="form.travelPeriodTo" format="yyyy-MM-dd" value-format="yyyy-MM-dd"
-                                :style="{width: '100%'}" placeholder="请选择日期选择" clearable></el-date-picker>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="12">
-              <el-form-item label="生效日期" prop="startTime">
-                <el-date-picker v-model="form.startTime" format="yyyy-MM-dd" value-format="yyyy-MM-dd"
-                                :style="{width: '100%'}" placeholder="请选择日期选择" clearable></el-date-picker>
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item label="失效日期" prop="endTime">
-                <el-date-picker v-model="form.endTime" format="yyyy-MM-dd" value-format="yyyy-MM-dd"
-                                :style="{width: '100%'}" placeholder="请选择日期选择" clearable></el-date-picker>
-              </el-form-item>
-            </el-col>
-          </el-row>
-        </div>
 
 
 
@@ -379,6 +428,13 @@
         ruleOptions: [],
         // 状态数据字典
         statusOptions: [],
+        sourceTypeOptions: [],
+        channelOptions: [],
+        policyTypeOptions: [],
+        payOptions: [],
+        pnrOptions: [],
+        patOptions: [],
+        childFalyOptions: [],
         // 查询参数
         queryParams: {
           current: 1,
@@ -440,15 +496,20 @@
       reset() {
         this.form = {
           ruleType: undefined,
-          origin: undefined,
-          destination: undefined,
-          bothWaysFlag: undefined,
+          airline: undefined,
+          depAirport: undefined,
+          arrAirport: undefined,
+          cabin: undefined,
+          sourceType: undefined,
+          channel: undefined,
           parameter1: undefined,
           parameter2: undefined,
-          startTime: undefined,
-          endTime: undefined,
-          travelPeriodFrom: undefined,
-          travelPeriodTo: undefined,
+          parameter3: undefined,
+          parameter4: undefined,
+          parameter5: undefined,
+          parameter6: undefined,
+          parameter7: undefined,
+          parameter8: undefined,
           status: "0",
           remark: undefined
         };
@@ -529,11 +590,19 @@
           this.msgSuccess("删除成功");
         }).catch(function() {});
       }
- }
-    // ruleTypeChange() {
-    //     this.productType=this.queryParams.ruleType;
-    //     console.log(this.queryParams.ruleType)
-    //   }
+ },
+
+    set_cell_style({row, column, rowIndex, columnIndex}) {
+      // console.log(row, "row")
+      if (column.label === 'CT001') {
+        return column.label = '携程一部';
+      }
+      if (column.label === 'CT002') {
+        return column.label = '携程二部';
+      }
+    }
+
+
     };
 
 </script>
