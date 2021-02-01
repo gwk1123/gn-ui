@@ -479,7 +479,7 @@
         pnrOptions: [],
         patOptions: [],
         childFalyOptions: [],
-        priceOptions: []
+        priceOptions: [],
         // 查询参数
         queryParams: {
           current: 1,
