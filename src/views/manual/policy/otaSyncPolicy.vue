@@ -52,7 +52,7 @@
 <!--          icon="el-icon-plus"-->
 <!--          size="mini"-->
 <!--          @click="handleAdd"-->
-<!--          v-hasPermi="['manual/policy_info/add']"-->
+<!--          v-hasPermi="['manual/ota_sync_policy/add']"-->
 <!--        >新增</el-button>-->
 <!--      </el-col>-->
       <el-col :span="1.5">
@@ -62,7 +62,7 @@
           size="mini"
           :disabled="multiple"
           @click="handleDelete"
-          v-hasPermi="['manual/policy_info/remove']"
+          v-hasPermi="['manual/ota_sync_policy/remove']"
         >删除</el-button>
       </el-col>
     </el-row>
@@ -97,14 +97,14 @@
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['manual/policy_info/edit']"
+            v-hasPermi="['manual/ota_sync_policy/edit']"
           >修改</el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['manual/policy_info/remove']"
+            v-hasPermi="['manual/ota_sync_policy/remove']"
           >删除</el-button>
         </template>
       </el-table-column>
@@ -311,10 +311,10 @@
 </template>
 
 <script>
-  import { listOtaSyncPolicy, getOtaSyncPolicy, delOtaSyncPolicy, addOtaSyncPolicy, updateOtaSyncPolicy, changeOtaSyncPolicyStatus } from "@/api/manual/policy/ota_sync_policy";
+  import { listOtaSyncPolicy, getOtaSyncPolicy, delOtaSyncPolicy, addOtaSyncPolicy, updateOtaSyncPolicy, changeOtaSyncPolicyStatus } from "@/api/manual/policy/otaSyncPolicy";
 
   export default {
-    name: "PolicyInfo",
+    name: "OtaSyncPolicy",
     data() {
       return {
         // 遮罩层
@@ -451,11 +451,6 @@
           tripType: "2",
           minTicketPrice: undefined,
           maxTicketPrice: undefined,
-          beforeCommission: undefined,
-          beforeAmount: undefined,
-          afterCommission: undefined,
-          afterAmount: undefined,
-          bidSpace: undefined,
           status: "0",
           ticketRemark: undefined
         };
