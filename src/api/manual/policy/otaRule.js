@@ -42,7 +42,7 @@ export function changeOtaRuleStatus(id, status) {
     status
   }
   return request({
-    url: '/manual/ota_rule/changeStatus',
+    url: '/manual/ota_rule/change_status',
     method: 'put',
     data: data
   })

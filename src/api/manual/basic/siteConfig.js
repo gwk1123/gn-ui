@@ -42,7 +42,7 @@ export function changeSiteConfigStatus(id, status) {
     status
   }
   return request({
-    url: '/manual/site_config/changeStatus',
+    url: '/manual/site_config/change_status',
     method: 'put',
     data: data
   })

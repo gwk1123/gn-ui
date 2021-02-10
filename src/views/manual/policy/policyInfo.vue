@@ -513,6 +513,9 @@
       /** 查询角色列表 */
       getList() {
         this.loading = true;
+        const path = this.$route.path;
+        const otaStr = path.split("/")[2];
+        this.queryParams.otaSiteCode = (otaStr.split("_")[1]).toUpperCase( );
         listPolicyInfo(this.addDateRange(this.queryParams, this.dateRange)).then(
           responseData => {
             const response = responseData.data;

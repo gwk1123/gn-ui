@@ -256,6 +256,9 @@
       /** 查询角色列表 */
       getList() {
         this.loading = true;
+        const path = this.$route.path;
+        const otaStr = path.split("/")[2];
+        this.queryParams.otaSiteCode = (otaStr.split("_")[1]).toUpperCase( );
         listResignConfig(this.addDateRange(this.queryParams, this.dateRange)).then(
           responseData => {
             const response = responseData.data;
@@ -335,6 +338,11 @@
       submitForm: function() {
         this.$refs["form"].validate(valid => {
           if (valid) {
+            const path = this.$route.path;
+            //跟据路由的路径获取平台和站点
+            const otaStr = path.split("/")[2];
+            // this.form.otaCode = (otaStr.split("_")[0]).toUpperCase( );
+            this.form.otaSiteCode = (otaStr.split("_")[1]).toUpperCase( );
             if (this.form.id != undefined) {
               updateResignConfig(this.form).then(response => {
                 if (response.code === 200) {
