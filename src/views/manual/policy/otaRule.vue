@@ -141,6 +141,85 @@
 
 
         <!--白名单 -->
+        <div v-show ="this.queryParams.ruleType =='OTA-0' ">
+
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="数据来源" prop="sourceType">
+                <el-select
+                  v-model="form.sourceType"
+                  placeholder="请选择下拉选择"
+                  clearable
+                  size="small"
+                  style="width: 240px"
+                >
+                  <el-option
+                    v-for="dict in sourceTypeOptions"
+                    :key="dict.dictValue"
+                    :label="dict.dictLabel"
+                    :value="dict.dictValue"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="数据渠道" prop="channel">
+                <el-select
+                  v-model="form.channel"
+                  placeholder="请选择下拉选择"
+                  clearable
+                  size="small"
+                  style="width: 240px"
+                >
+                  <el-option
+                    v-for="dict in channelOptions"
+                    :key="dict.dictValue"
+                    :label="dict.dictLabel"
+                    :value="dict.dictValue"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="航司" prop="airline" label-width="150px">
+                <el-input v-model="form.airline" placeholder="多个用英文的/分开" />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="舱位" prop="cabin" label-width="150px">
+                <el-input v-model="form.cabin" placeholder="多个用英文的/分开" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="出发地" prop="depAirport" label-width="150px">
+                <el-input v-model="form.depAirport" placeholder="出发机场码 多个用英文的/分开 999表示全国" />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="目的地" prop="arrAirport" label-width="150px">
+                <el-input v-model="form.arrAirport" placeholder="抵达机场码 多个用英文的/分开 999表示全国" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="航班号" prop="parameter1" label-width="150px">
+                <el-input v-model="form.parameter1" placeholder="航班号(不包含航司二字码) 格式：123/234 多个用英文的/分开" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </div>
+
+
+
+        <!--黑名单 -->
         <div v-show ="this.queryParams.ruleType =='OTA-1' ">
 
           <el-row>
