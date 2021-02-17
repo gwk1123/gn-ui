@@ -123,7 +123,7 @@
         <el-row>
           <el-form-item label="规则类型" prop="ruleType" label-width="150px">
             <el-select
-              v-model="queryParams.ruleType"
+              v-model="form.ruleType"
               placeholder="规则类型"
               clearable
               size="small"
@@ -141,7 +141,7 @@
 
 
         <!--白名单 -->
-        <div v-show ="this.queryParams.ruleType =='OTA-0' ">
+        <div v-show ="this.form.ruleType =='OTA-0' ">
 
           <el-row>
             <el-col :span="12">
@@ -220,7 +220,7 @@
 
 
         <!--黑名单 -->
-        <div v-show ="this.queryParams.ruleType =='OTA-1' ">
+        <div v-show ="this.form.ruleType =='OTA-1' ">
 
           <el-row>
             <el-col :span="12">
@@ -296,7 +296,7 @@
         </el-row>
         </div>
 
-        <div v-show ="this.queryParams.ruleType =='OTA-3' ">
+        <div v-show ="this.form.ruleType =='OTA-2' ">
           <el-row>
             <el-col :span="12">
               <el-form-item label="数据来源" prop="sourceType">
@@ -456,7 +456,7 @@
 
 
         <!--OTA发布价格-->
-        <div v-show ="this.queryParams.ruleType =='OTA-4' ">
+        <div v-show ="this.form.ruleType =='OTA-3' ">
 
           <el-row>
             <el-col :span="12">
@@ -587,10 +587,10 @@
       this.getDicts("CTRIP_POLICY").then(response => {
         this.policyTypeOptions = response.data;
       });
-      this.getDicts("SOURCE_TYPE").then(response => {
+      this.getDicts("MANUAL_SOURCE_TYPE").then(response => {
         this.sourceTypeOptions = response.data;
       });
-      this.getDicts("CHANNEL").then(response => {
+      this.getDicts("MANUAL_CHANNEL").then(response => {
         this.channelOptions = response.data;
       });
       this.getDicts("sys_yes_no").then(response => {
