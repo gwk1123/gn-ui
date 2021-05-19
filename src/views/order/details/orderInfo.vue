@@ -189,8 +189,14 @@
     />
 
     <!-- 添加或修改角色配置对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :title="title" :visible.sync="open" width="1200px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+
+        <el-card >
+          <div slot="header" >
+            <span>运价信息</span>
+          </div>
+          <div>
         <el-form-item label="出发地" prop="depAirport">
           <el-input v-model="form.depAirport" placeholder="请输入大写字母" />
         </el-form-item>
@@ -200,6 +206,59 @@
         <el-form-item label="航司" prop="airline">
           <el-input v-model="form.airline" placeholder="只能录入航司二字码" />
         </el-form-item>
+          </div>
+        </el-card>
+
+        <el-card >
+          <div slot="header" >
+            <span>航段信息</span>
+          </div>
+          <div>
+
+              <el-table
+                :data="form.orderInfoSegments"
+                style="width: 100%">;
+                <el-table-column
+                  label="航程序号"
+                  width="180">
+                  <template slot-scope="scope">
+                    <el-form-item :prop="`orderInfoSegments.${scope.$index}.journeySequence`" :rules='rules.journeySequence'>
+                      <el-input style="width:80px"  v-model="scope.row.journeySequence" ></el-input>
+                    </el-form-item>
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  label="姓名"
+                  width="180">
+                  <template slot-scope="scope">
+                    <el-form-item :prop="`orderInfoSegments.${scope.$index}.flightNumber`" :rules='rules.flightNumber'>
+                      <el-input style="width:80px"  v-model="scope.row.flightNumber" ></el-input>
+                    </el-form-item>
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  label="地址">
+                  <template slot-scope="scope">
+                    <el-form-item :prop="`orderInfoSegments.${scope.$index}.depCity`" :rules='rules.depCity'>
+                      <el-input style="width:80px"  v-model="scope.row.depCity" ></el-input>
+                    </el-form-item>
+                  </template>
+                </el-table-column>
+              </el-table>
+
+
+          </div>
+        </el-card>
+
+        <el-card >
+          <div slot="header" >
+            <span>乘客信息</span>
+          </div>
+          <div>
+
+          </div>
+        </el-card>
+
 
         <el-form-item label="状态">
           <el-radio-group v-model="form.status">
@@ -288,7 +347,7 @@
         listOrderInfo(this.addDateRange(this.queryParams, this.dateRange)).then(
           responseData => {
             const response = responseData.data;
-            this.baseAirRouteList = response.records;
+            this.orderInfoList = response.records;
             this.total = response.total;
             this.loading = false;
           }
