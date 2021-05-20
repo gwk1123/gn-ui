@@ -197,15 +197,391 @@
             <span>运价信息</span>
           </div>
           <div>
+
+            <el-row>
+              <el-col :span="6">
+                <el-form-item label="站点" prop="otaSiteCode">
+                  <el-input v-model="form.otaSiteCode" placeholder="请输入大写字母" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
             <el-form-item label="出发地" prop="depAirport">
               <el-input v-model="form.depAirport" placeholder="请输入大写字母" />
             </el-form-item>
+              </el-col>
+              <el-col :span="6">
             <el-form-item label="目的地" prop="arrAirport">
               <el-input v-model="form.arrAirport" placeholder="请输入大写字母" />
             </el-form-item>
+              </el-col>
+              <el-col :span="6">
             <el-form-item label="航司" prop="airline">
               <el-input v-model="form.airline" placeholder="只能录入航司二字码" />
             </el-form-item>
+              </el-col>
+            </el-row>
+
+            <el-row>
+              <el-col :span="6">
+                <el-form-item label="订单编码" prop="orderNo">
+                  <el-input v-model="form.orderNo" placeholder="请输入大写字母" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="OTA平台的订单号" prop="otaOrderNo">
+                  <el-input v-model="form.otaOrderNo" placeholder="请输入大写字母" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="订单录入类型" prop="orderInputType">
+                  <el-input v-model="form.orderInputType" placeholder="请输入大写字母" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="紧急程度" prop="urgency">
+                  <el-input v-model="form.urgency" placeholder="只能录入航司二字码" />
+                </el-form-item>
+              </el-col>
+            </el-row>
+
+            <el-row>
+              <el-col :span="6">
+                <el-form-item label="航班类型" prop="orderNo">
+                  <el-input v-model="form.flightClass" placeholder="请输入大写字母" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="票单最晚出票时间" prop="otaOrderNo">
+                  <el-input v-model="form.lastIssueTime" placeholder="请输入大写字母" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="出票方式" prop="orderInputType">
+                  <el-input v-model="form.issueWay" placeholder="请输入大写字母" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="ADTK时间" prop="urgency">
+                  <el-input v-model="form.adtk" placeholder="只能录入航司二字码" />
+                </el-form-item>
+              </el-col>
+            </el-row>
+
+            <el-row>
+              <el-col :span="6">
+                <el-form-item label="订单状态" prop="orderNo">
+                  <el-input v-model="form.orderStatus" placeholder="请输入大写字母" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="出票状态" prop="otaOrderNo">
+                  <el-input v-model="form.issueStatus" placeholder="请输入大写字母" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="查询GDS系统" prop="orderInputType">
+                  <el-input v-model="form.searchGdsChannel" placeholder="请输入大写字母" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="查询office号" prop="urgency">
+                  <el-input v-model="form.searchOfficeNo" placeholder="只能录入航司二字码" />
+                </el-form-item>
+              </el-col>
+            </el-row>
+
+
+            <el-row>
+              <el-col :span="6">
+                <el-form-item label="订位GDS系统" prop="orderNo">
+                  <el-input v-model="form.bookGdsChannel" placeholder="请输入大写字母" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="订位office号" prop="otaOrderNo">
+                  <el-input v-model="form.bookOfficeNo" placeholder="请输入大写字母" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="订位航司大编码" prop="orderInputType">
+                  <el-input v-model="form.bookAirlinePnrNo" placeholder="请输入大写字母" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="订位PNR" prop="urgency">
+                  <el-input v-model="form.bookPnrNo" placeholder="只能录入航司二字码" />
+                </el-form-item>
+              </el-col>
+            </el-row>
+
+            <el-row>
+              <el-col :span="6">
+                <el-form-item label="订位GDS系统" prop="orderNo">
+                  <el-input v-model="form.bookGdsChannel" placeholder="请输入大写字母" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="订位office号" prop="otaOrderNo">
+                  <el-input v-model="form.bookOfficeNo" placeholder="请输入大写字母" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="订位航司大编码" prop="orderInputType">
+                  <el-input v-model="form.bookAirlinePnrNo" placeholder="请输入大写字母" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="订位PNR" prop="urgency">
+                  <el-input v-model="form.bookPnrNo" placeholder="只能录入航司二字码" />
+                </el-form-item>
+              </el-col>
+            </el-row>
+
+            <el-row>
+              <el-col :span="6">
+                <el-form-item label="政策ID" prop="orderNo">
+                  <el-input v-model="form.policyId" placeholder="请输入大写字母" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="产品类型" prop="otaOrderNo">
+                  <el-input v-model="form.productType" placeholder="请输入大写字母" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="总结算费用" prop="orderInputType">
+                  <el-input v-model="form.totalSettlingCharge" placeholder="请输入大写字母" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="总订单费用" prop="urgency">
+                  <el-input v-model="form.totalAmount" placeholder="只能录入航司二字码" />
+                </el-form-item>
+              </el-col>
+            </el-row>
+
+            <el-row>
+              <el-col :span="6">
+                <el-form-item label="总票价" prop="orderNo">
+                  <el-input v-model="form.totalTicketPrice" placeholder="请输入大写字母" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="总税费" prop="otaOrderNo">
+                  <el-input v-model="form.totalTaxPrice" placeholder="请输入大写字母" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="销售佣金%比" prop="orderInputType">
+                  <el-input v-model="form.commissionPrice" placeholder="请输入大写字母" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="佣金上限" prop="urgency">
+                  <el-input v-model="form.commitionLimit" placeholder="只能录入航司二字码" />
+                </el-form-item>
+              </el-col>
+            </el-row>
+
+            <el-row>
+              <el-col :span="6">
+                <el-form-item label="价格类型" prop="orderNo">
+                  <el-input v-model="form.priceType" placeholder="请输入大写字母" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="联系人" prop="otaOrderNo">
+                  <el-input v-model="form.contactPerson" placeholder="请输入大写字母" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="联系电话" prop="orderInputType">
+                  <el-input v-model="form.contactPhone" placeholder="请输入大写字母" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="联系人邮箱" prop="urgency">
+                  <el-input v-model="form.contactEmail" placeholder="只能录入航司二字码" />
+                </el-form-item>
+              </el-col>
+            </el-row>
+
+            <el-row>
+              <el-col :span="6">
+                <el-form-item label="政策员id" prop="orderNo">
+                  <el-input v-model="form.policyOperatorId" placeholder="请输入大写字母" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="出票员id" prop="otaOrderNo">
+                  <el-input v-model="form.issueOperatorId" placeholder="请输入大写字母" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="过单员id" prop="orderInputType">
+                  <el-input v-model="form.orderConfirmId" placeholder="请输入大写字母" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="政策员姓名" prop="urgency">
+                  <el-input v-model="form.policyOperator" placeholder="只能录入航司二字码" />
+                </el-form-item>
+              </el-col>
+            </el-row>
+
+            <el-row>
+              <el-col :span="6">
+                <el-form-item label="出票员姓名" prop="orderNo">
+                  <el-input v-model="form.issueOperator" placeholder="请输入大写字母" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="保险总费用" prop="otaOrderNo">
+                  <el-input v-model="form.insuranceFee" placeholder="请输入大写字母" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="保险总份数" prop="orderInputType">
+                  <el-input v-model="form.insuranceCount" placeholder="请输入大写字母" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="退票规则" prop="urgency">
+                  <el-input v-model="form.returnTicketRule" placeholder="只能录入航司二字码" />
+                </el-form-item>
+              </el-col>
+            </el-row>
+
+            <el-row>
+              <el-col :span="6">
+                <el-form-item label="出票员姓名" prop="orderNo">
+                  <el-input v-model="form.issueOperator" placeholder="请输入大写字母" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="保险总费用" prop="otaOrderNo">
+                  <el-input v-model="form.insuranceFee" placeholder="请输入大写字母" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="保险总份数" prop="orderInputType">
+                  <el-input v-model="form.insuranceCount" placeholder="请输入大写字母" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="退票规则" prop="urgency">
+                  <el-input v-model="form.returnTicketRule" placeholder="只能录入航司二字码" />
+                </el-form-item>
+              </el-col>
+            </el-row>
+
+            <el-row>
+              <el-col :span="6">
+                <el-form-item label="改期规则" prop="orderNo">
+                  <el-input v-model="form.changeDateRule" placeholder="请输入大写字母" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="行李额" prop="otaOrderNo">
+                  <el-input v-model="form.baggageRule" placeholder="请输入大写字母" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="是否需要报销凭证" prop="orderInputType">
+                  <el-input v-model="form.itineraryReceiptFlag" placeholder="请输入大写字母" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="报销发票类型" prop="urgency">
+                  <el-input v-model="form.invoiceType" placeholder="只能录入航司二字码" />
+                </el-form-item>
+              </el-col>
+            </el-row>
+
+            <el-row>
+              <el-col :span="6">
+                <el-form-item label="佣金金额" prop="orderNo">
+                  <el-input v-model="form.commissionAmount" placeholder="请输入大写字母" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="儿童票价" prop="otaOrderNo">
+                  <el-input v-model="form.childTicketPrice" placeholder="请输入大写字母" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="儿童税费" prop="orderInputType">
+                  <el-input v-model="form.childTaxPrice" placeholder="请输入大写字母" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="成人票价" prop="urgency">
+                  <el-input v-model="form.adultTicketPrice" placeholder="只能录入航司二字码" />
+                </el-form-item>
+              </el-col>
+            </el-row>
+
+            <el-row>
+              <el-col :span="6">
+                <el-form-item label="成人税费" prop="orderNo">
+                  <el-input v-model="form.adultTaxPrice" placeholder="请输入大写字母" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="婴儿票价" prop="otaOrderNo">
+                  <el-input v-model="form.infantTicketPrice" placeholder="请输入大写字母" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="婴儿税费" prop="orderInputType">
+                  <el-input v-model="form.infantTaxPrice" placeholder="请输入大写字母" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="被授权的office号" prop="urgency">
+                  <el-input v-model="form.permissionOfficeNo" placeholder="只能录入航司二字码" />
+                </el-form-item>
+              </el-col>
+            </el-row>
+
+            <el-row>
+              <el-col :span="6">
+                <el-form-item label="被授权状态" prop="orderNo">
+                  <el-input v-model="form.permissionFlag" placeholder="请输入大写字母" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="开票航司" prop="otaOrderNo">
+                  <el-input v-model="form.airline" placeholder="请输入大写字母" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="出发地" prop="orderInputType">
+                  <el-input v-model="form.depAirport" placeholder="请输入大写字母" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="目的地" prop="urgency">
+                  <el-input v-model="form.arrAirport" placeholder="只能录入航司二字码" />
+                </el-form-item>
+              </el-col>
+            </el-row>
+
+            <el-row>
+              <el-col :span="6">
+                <el-form-item label="提取票号时间分钟" prop="orderNo">
+                  <el-input v-model="form.retrieveTime" placeholder="请输入大写字母" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="状态" prop="otaOrderNo">
+                  <el-input v-model="form.status" placeholder="请输入大写字母" />
+                </el-form-item>
+              </el-col>
+            </el-row>
+
+
+
           </div>
         </el-card>
 
@@ -214,7 +590,6 @@
             <span>航段信息</span>
           </div>
           <div>
-
 
             <el-button @click="addTableItem">添加</el-button>
             <el-button @click="delTableItem">删除</el-button>
