@@ -1060,6 +1060,7 @@
           arrAirport: undefined,
           status: "0",
           orderInfoSegments: [],
+          orderInfoPassengers: [],
           remark: undefined
         };
         this.resetForm("form");
