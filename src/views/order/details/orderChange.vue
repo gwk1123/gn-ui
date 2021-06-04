@@ -95,7 +95,7 @@
     />
 
     <!-- 添加或修改角色配置对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :title="title" :visible.sync="open" width="900px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="最迟确认时间" prop="latestIssueTime">
           <el-input v-model="form.latestIssueTime" placeholder="请输入类型" />
@@ -103,6 +103,217 @@
         <el-form-item label="申请改签原因" prop="applyChangeReason">
           <el-input v-model="form.applyChangeReason" placeholder="请输入申请改签原因" />
         </el-form-item>
+
+        <el-card >
+          <div slot="header" >
+            <span>航段信息</span>
+          </div>
+          <div>
+
+            <el-button @click="addTableItem">添加</el-button>
+            <el-button @click="delTableItem">删除</el-button>
+
+            <el-table
+              :data="form.orderInfoSegments"
+              style="width: 100%"
+              border
+              @selection-change="addSegmentSelectionChange"
+            >
+              <el-table-column type="selection" width="55" align="center">
+              </el-table-column>
+
+              <el-table-column align="center">
+                <template slot="header" slot-scope="scope">
+                  <span style="color:#2d65dc;">航程序号</span>
+                  <i style="color:#F56C6C;">*</i>
+                </template>
+                <template slot-scope="scope">
+                  <el-form-item  class="aa"
+                                 :prop="'orderInfoSegments.' + scope.$index + '.journeySequence'"
+                                 :rules="form.orderInfoSegments.journeySequence"
+                  >
+                    <el-input
+                      type="text"
+                      v-model="scope.row.journeySequence"
+                    ></el-input>
+                  </el-form-item>
+                </template>
+              </el-table-column>
+
+              <el-table-column align="center">
+                <template slot="header" slot-scope="scope">
+                  <span style="color:#2d65dc;">航段序号</span>
+                  <i style="color:#F56C6C;">*</i>
+                </template>
+                <template slot-scope="scope">
+                  <el-form-item class="aa"
+                                :prop="'orderInfoSegments.' + scope.$index + '.segmentSequence'"
+                                :rules="form.orderInfoSegments.segmentSequence"
+                  >
+                    <el-input
+                      type="text"
+                      v-model="scope.row.segmentSequence"
+                      align="center"
+                    ></el-input>
+                  </el-form-item>
+                </template>
+              </el-table-column>
+
+              <el-table-column align="center">
+                <template slot="header" slot-scope="scope">
+                  <span style="color:#2d65dc;">航班号</span>
+                  <i style="color:#F56C6C;">*</i>
+                </template>
+                <template slot-scope="scope">
+                  <el-form-item class="aa"
+                                :prop="'orderInfoSegments.' + scope.$index + '.flightNumber'"
+                                :rules="form.orderInfoSegments.flightNumber"
+                  >
+                    <el-input
+                      type="text"
+                      v-model="scope.row.flightNumber"
+                      autocomplete="off"
+                    ></el-input>
+                  </el-form-item>
+                </template>
+              </el-table-column>
+
+              <el-table-column align="center">
+                <template slot="header" slot-scope="scope">
+                  <span style="color:#2d65dc;">出发地</span>
+                  <i style="color:#F56C6C;">*</i>
+                </template>
+                <template slot-scope="scope">
+                  <el-form-item class="aa"
+                                :prop="'orderInfoSegments.' + scope.$index + '.depCity'"
+                                :rules="form.orderInfoSegments.depCity"
+                  >
+                    <el-input
+                      type="text"
+                      v-model="scope.row.depCity"
+                      autocomplete="off"
+                    ></el-input>
+                  </el-form-item>
+                </template>
+              </el-table-column>
+
+              <el-table-column align="center">
+                <template slot="header" slot-scope="scope">
+                  <span style="color:#2d65dc;">抵达地</span>
+                  <i style="color:#F56C6C;">*</i>
+                </template>
+                <template slot-scope="scope">
+                  <el-form-item class="aa"
+                                :prop="'orderInfoSegments.' + scope.$index + '.arrCity'"
+                                :rules="form.orderInfoSegments.arrCity"
+                  >
+                    <el-input
+                      type="text"
+                      v-model="scope.row.arrCity"
+                      autocomplete="off"
+                    ></el-input>
+                  </el-form-item>
+                </template>
+              </el-table-column>
+
+              <el-table-column align="center">
+                <template slot="header" slot-scope="scope">
+                  <span style="color:#2d65dc;">舱等</span>
+                  <i style="color:#F56C6C;">*</i>
+                </template>
+                <template slot-scope="scope">
+                  <el-form-item class="aa"
+                                :prop="'orderInfoSegments.' + scope.$index + '.cabinGrade'"
+                                :rules="form.orderInfoSegments.cabinGrade"
+                  >
+                    <el-input
+                      type="text"
+                      v-model="scope.row.cabinGrade"
+                      autocomplete="off"
+                    ></el-input>
+                  </el-form-item>
+                </template>
+              </el-table-column>
+
+              <el-table-column align="center">
+                <template slot="header" slot-scope="scope">
+                  <span style="color:#2d65dc;">舱位</span>
+                  <i style="color:#F56C6C;">*</i>
+                </template>
+                <template slot-scope="scope">
+                  <el-form-item class="aa"
+                                :prop="'orderInfoSegments.' + scope.$index + '.cabin'"
+                                :rules="form.orderInfoSegments.cabin"
+                  >
+                    <el-input
+                      type="text"
+                      v-model="scope.row.cabin"
+                      autocomplete="off"
+                    ></el-input>
+                  </el-form-item>
+                </template>
+              </el-table-column>
+
+              <el-table-column align="center">
+                <template slot="header" slot-scope="scope">
+                  <span style="color:#2d65dc;">出发时间</span>
+                  <i style="color:#F56C6C;">*</i>
+                </template>
+                <template slot-scope="scope">
+                  <el-form-item class="aa"
+                                :prop="'orderInfoSegments.' + scope.$index + '.depTime'"
+                                :rules="form.orderInfoSegments.depTime"
+                  >
+                    <el-input
+                      type="text"
+                      v-model="scope.row.depTime"
+                      autocomplete="off"
+                    ></el-input>
+                  </el-form-item>
+                </template>
+              </el-table-column>
+
+              <el-table-column align="center">
+                <template slot="header" slot-scope="scope">
+                  <span style="color:#2d65dc;">抵达时间</span>
+                  <i style="color:#F56C6C;">*</i>
+                </template>
+                <template slot-scope="scope">
+                  <el-form-item class="aa"
+                                :prop="'orderInfoSegments.' + scope.$index + '.arrTime'"
+                                :rules="form.orderInfoSegments.arrTime"
+                  >
+                    <el-input
+                      type="text"
+                      v-model="scope.row.arrTime"
+                      autocomplete="off"
+                    ></el-input>
+                  </el-form-item>
+                </template>
+              </el-table-column>
+
+              <el-table-column align="center">
+                <template slot="header" slot-scope="scope">
+                  <span style="color:#2d65dc;">销售航司</span>
+                  <i style="color:#F56C6C;">*</i>
+                </template>
+                <template slot-scope="scope">
+                  <el-form-item class="aa"
+                                :prop="'orderInfoSegments.' + scope.$index + '.marketingAirline'"
+                                :rules="form.orderInfoSegments.marketingAirline"
+                  >
+                    <el-input
+                      type="text"
+                      v-model="scope.row.marketingAirline"
+                      autocomplete="off"
+                    ></el-input>
+                  </el-form-item>
+                </template>
+              </el-table-column>
+
+            </el-table>
+          </div>
+        </el-card>
 
 
         <el-form-item label="状态">
@@ -161,7 +372,9 @@
           size: 10
         },
         // 表单参数
-        form: {},
+        form: {
+          orderInfoSegments:[]
+        },
         // 表单校验
         rules: {
           type: [
@@ -213,6 +426,7 @@
       reset() {
         this.form = {
           status: "0",
+          orderInfoSegments: [],
           remark: undefined
         };
         this.resetForm("form");
@@ -287,9 +501,56 @@
           this.getList();
           this.msgSuccess("删除成功");
         }).catch(function() {});
+      },
+      addTableItem() {
+        this.tabItemId = "T" + this.RndNum(6); //生成以T开头的七位随机数
+        this.form.orderInfoSegments.push({
+          journeySequence: "",
+          flightNumber: "",
+          segmentSequence: "",
+          depCity: "",
+          arrCity: "",
+          cabinGrade: "",
+          cabin: "",
+          depTime: "",
+          arrTime: "",
+          marketingAirline: "",
+          tabItemId: this.tabItemId
+        });
+      },
+      RndNum(n) {
+        // 生成随机数
+        let rdmNum = "";
+        for (let i = 0; i < n; i++) {
+          rdmNum += Math.floor(Math.random() * 10); // [0,10)的整数
+        }
+        return rdmNum;
+      },
+      addSegmentSelectionChange(val) {
+        this.addJsonMultiple = val;
+      },
+      delTableItem() {
+        // 确认删除
+        if (this.form.orderInfoSegments.length > 0) {
+          let arrs = [];
+          let ids = this.addJsonMultiple.map(val => val.tabItemId); //拿到选中的数据id,
+          this.form.orderInfoSegments.forEach(item => {
+            if (!ids.includes(item.tabItemId)) {
+              // 当id在params中，表示数据被选中，该将其删除，即将不被选中的保留
+              arrs.push(item);
+            }
+          });
+          this.form.orderInfoSegments = arrs;
+        } else {
+          this.$message.warning("请选择要删除的数据");
+        }
       }
     }
   };
 </script>
-
+<style scoped>
+  .aa >>> .el-form-item__content {
+    margin-left:0px !important;
+  }
+</style>
 
