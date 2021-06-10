@@ -10,7 +10,8 @@
           size="mini"
           @click="handleAdd"
           v-hasPermi="['order/order_info/add']"
-        >新增</el-button>
+        >新增
+        </el-button>
       </el-col>
     </el-row>
 
@@ -19,8 +20,8 @@
     <el-dialog :title="title" :visible.sync="open" width="1200px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
 
-        <el-card >
-          <div slot="header" >
+        <el-card>
+          <div slot="header">
             <span>订单信息</span>
           </div>
           <div>
@@ -28,99 +29,99 @@
 
             <el-row>
               <el-col :span="6">
-            <el-form-item label="站点" prop="otaSiteCode" >
-              <el-input v-model="form.otaSiteCode" placeholder="请输入大写字母" disabled="disabled"/>
-            </el-form-item>
-            </el-col>
+                <el-form-item label="站点" prop="otaSiteCode">
+                  <el-input v-model="form.otaSiteCode" placeholder="请输入大写字母" disabled="disabled"/>
+                </el-form-item>
+              </el-col>
               <el-col :span="6">
                 <el-form-item label="OTA平台的订单号" prop="otaOrderNo">
-                  <el-input v-model="form.otaOrderNo" placeholder="请输入大写字母" />
+                  <el-input v-model="form.otaOrderNo" placeholder="请输入大写字母"/>
                 </el-form-item>
               </el-col>
               <el-col :span="6">
                 <el-form-item label="订位PNR" prop="urgency">
-                  <el-input v-model="form.bookPnrNo" placeholder="只能录入航司二字码" />
+                  <el-input v-model="form.bookPnrNo" placeholder="只能录入航司二字码"/>
                 </el-form-item>
               </el-col>
               <el-col :span="6">
                 <el-form-item label="总订单费用" prop="urgency">
-                  <el-input v-model="form.totalAmount" placeholder="只能录入航司二字码" />
+                  <el-input v-model="form.totalAmount" placeholder="只能录入航司二字码"/>
                 </el-form-item>
               </el-col>
             </el-row>
 
-              <el-row>
-                <el-col :span="6">
-                  <el-form-item label="总票价" prop="orderNo">
-                    <el-input v-model="form.totalTicketPrice" placeholder="请输入大写字母" />
-                  </el-form-item>
-                </el-col>
-                <el-col :span="6">
-                  <el-form-item label="总税费" prop="otaOrderNo">
-                    <el-input v-model="form.totalTaxPrice" placeholder="请输入大写字母" />
-                  </el-form-item>
-                </el-col>
-                <el-col :span="6">
-                  <el-form-item label="销售佣金%比" prop="orderInputType">
-                    <el-input v-model="form.commissionPrice" placeholder="请输入大写字母" />
-                  </el-form-item>
-                </el-col>
-                <el-col :span="6">
-                  <el-form-item label="产品类型" prop="otaOrderNo">
-                    <el-input v-model="form.productType" placeholder="请输入大写字母" />
-                  </el-form-item>
-                </el-col>
-              </el-row>
             <el-row>
-                <el-col :span="6">
-                  <el-form-item label="票单最晚出票时间" prop="otaOrderNo">
-                    <el-input v-model="form.lastIssueTime" placeholder="请输入大写字母" />
-                  </el-form-item>
-                </el-col>
-                <el-col :span="6">
-                  <el-form-item label="保险总费用" prop="otaOrderNo">
-                    <el-input v-model="form.insuranceFee" placeholder="请输入大写字母" />
-                  </el-form-item>
-                </el-col>
-                <el-col :span="6">
-                  <el-form-item label="保险总份数" prop="orderInputType">
-                    <el-input v-model="form.insuranceCount" placeholder="请输入大写字母" />
-                  </el-form-item>
-                </el-col>
-                <el-col :span="6">
-                  <el-form-item label="联系人" prop="otaOrderNo">
-                    <el-input v-model="form.contactPerson" placeholder="请输入大写字母" />
-                  </el-form-item>
-                </el-col>
+              <el-col :span="6">
+                <el-form-item label="总票价" prop="orderNo">
+                  <el-input v-model="form.totalTicketPrice" placeholder="请输入大写字母"/>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="总税费" prop="otaOrderNo">
+                  <el-input v-model="form.totalTaxPrice" placeholder="请输入大写字母"/>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="销售佣金%比" prop="orderInputType">
+                  <el-input v-model="form.commissionPrice" placeholder="请输入大写字母"/>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="产品类型" prop="otaOrderNo">
+                  <el-input v-model="form.productType" placeholder="请输入大写字母"/>
+                </el-form-item>
+              </el-col>
             </el-row>
             <el-row>
-                <el-col :span="6">
-                  <el-form-item label="联系电话" prop="orderInputType">
-                    <el-input v-model="form.contactPhone" placeholder="请输入大写字母" />
-                  </el-form-item>
-                </el-col>
-                <el-col :span="6">
-                  <el-form-item label="联系人邮箱" prop="urgency">
-                    <el-input v-model="form.contactEmail" placeholder="只能录入航司二字码" />
-                  </el-form-item>
-                </el-col>
-                <el-col :span="6">
-                  <el-form-item label="报销发票类型" prop="urgency">
-                    <el-input v-model="form.invoiceType" placeholder="只能录入航司二字码" />
-                  </el-form-item>
-                </el-col>
-                <el-col :span="6">
-                  <el-form-item label="政策ID" prop="orderNo">
-                    <el-input v-model="form.policyId" placeholder="请输入大写字母" />
-                  </el-form-item>
-                </el-col>
-              </el-row>
+              <el-col :span="6">
+                <el-form-item label="票单最晚出票时间" prop="otaOrderNo">
+                  <el-input v-model="form.lastIssueTime" placeholder="请输入大写字母"/>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="保险总费用" prop="otaOrderNo">
+                  <el-input v-model="form.insuranceFee" placeholder="请输入大写字母"/>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="保险总份数" prop="orderInputType">
+                  <el-input v-model="form.insuranceCount" placeholder="请输入大写字母"/>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="联系人" prop="otaOrderNo">
+                  <el-input v-model="form.contactPerson" placeholder="请输入大写字母"/>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="6">
+                <el-form-item label="联系电话" prop="orderInputType">
+                  <el-input v-model="form.contactPhone" placeholder="请输入大写字母"/>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="联系人邮箱" prop="urgency">
+                  <el-input v-model="form.contactEmail" placeholder="只能录入航司二字码"/>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="报销发票类型" prop="urgency">
+                  <el-input v-model="form.invoiceType" placeholder="只能录入航司二字码"/>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="政策ID" prop="orderNo">
+                  <el-input v-model="form.policyId" placeholder="请输入大写字母"/>
+                </el-form-item>
+              </el-col>
+            </el-row>
 
           </div>
         </el-card>
 
-        <el-card >
-          <div slot="header" >
+        <el-card>
+          <div slot="header">
             <span>航段信息</span>
           </div>
           <div>
@@ -143,9 +144,9 @@
                   <i style="color:#F56C6C;">*</i>
                 </template>
                 <template slot-scope="scope">
-                  <el-form-item  class="aa"
-                                 :prop="'orderInfoSegments.' + scope.$index + '.journeySequence'"
-                                 :rules="form.orderInfoSegments.journeySequence"
+                  <el-form-item class="aa"
+                                :prop="'orderInfoSegments.' + scope.$index + '.journeySequence'"
+                                :rules="form.orderInfoSegments.journeySequence"
                   >
                     <el-input
                       type="text"
@@ -330,8 +331,8 @@
           </div>
         </el-card>
 
-        <el-card >
-          <div slot="header" >
+        <el-card>
+          <div slot="header">
             <span>乘客信息</span>
           </div>
           <div>
@@ -355,9 +356,9 @@
                   <i style="color:#F56C6C;">*</i>
                 </template>
                 <template slot-scope="scope">
-                  <el-form-item  class="aa"
-                                 :prop="'orderInfoPassengers.' + scope.$index + '.passengerName'"
-                                 :rules="form.orderInfoPassengers.passengerName"
+                  <el-form-item class="aa"
+                                :prop="'orderInfoPassengers.' + scope.$index + '.passengerName'"
+                                :rules="form.orderInfoPassengers.passengerName"
                   >
                     <el-input
                       type="text"
@@ -468,18 +469,18 @@
         </el-card>
 
 
-<!--        <el-form-item label="状态">-->
-<!--          <el-radio-group v-model="form.status">-->
-<!--            <el-radio-->
-<!--              v-for="dict in statusOptions"-->
-<!--              :key="dict.dictValue"-->
-<!--              :label="dict.dictValue"-->
-<!--            >{{dict.dictLabel}}</el-radio>-->
-<!--          </el-radio-group>-->
-<!--        </el-form-item>-->
-<!--        <el-form-item label="备注">-->
-<!--          <el-input v-model="form.remark" type="textarea" placeholder="请输入内容"></el-input>-->
-<!--        </el-form-item>-->
+        <!--        <el-form-item label="状态">-->
+        <!--          <el-radio-group v-model="form.status">-->
+        <!--            <el-radio-->
+        <!--              v-for="dict in statusOptions"-->
+        <!--              :key="dict.dictValue"-->
+        <!--              :label="dict.dictValue"-->
+        <!--            >{{dict.dictLabel}}</el-radio>-->
+        <!--          </el-radio-group>-->
+        <!--        </el-form-item>-->
+        <!--        <el-form-item label="备注">-->
+        <!--          <el-input v-model="form.remark" type="textarea" placeholder="请输入内容"></el-input>-->
+        <!--        </el-form-item>-->
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -490,7 +491,14 @@
 </template>
 
 <script>
-  import { listOrderInput, getOrderInput, delOrderInput, addOrderInput, updateOrderInput, changeOrderInputStatus } from "@/api/order/details/orderInput";
+  import {
+    listOrderInput,
+    getOrderInput,
+    delOrderInput,
+    addOrderInput,
+    updateOrderInput,
+    changeOrderInputStatus
+  } from "@/api/order/details/orderInput";
 
   export default {
     name: "orderInput",
@@ -528,19 +536,19 @@
         },
         // 表单参数
         form: {
-          orderInfoSegments:[],
+          orderInfoSegments: [],
           orderInfoPassengers: []
         },
         // 表单校验
         rules: {
           airline: [
-            { required: true, message: "航司不能为空", trigger: "blur" }
+            {required: true, message: "航司不能为空", trigger: "blur"}
           ],
           depAirport: [
-            { required: true, message: "出发地不能为空", trigger: "blur" }
+            {required: true, message: "出发地不能为空", trigger: "blur"}
           ],
           arrAirport: [
-            { required: true, message: "目的地不能为空", trigger: "blur" }
+            {required: true, message: "目的地不能为空", trigger: "blur"}
           ]
         },
         addJsonMultiple: [],
@@ -573,11 +581,11 @@
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning"
-        }).then(function() {
+        }).then(function () {
           return changeOrderInputStatus(row.id, row.status);
         }).then(() => {
           this.msgSuccess(text + "成功");
-        }).catch(function() {
+        }).catch(function () {
           row.status = row.status === "0" ? "1" : "0";
         });
       },
@@ -613,7 +621,7 @@
       // 多选框选中数据
       handleSelectionChange(selection) {
         this.ids = selection.map(item => item.id)
-        this.single = selection.length!=1
+        this.single = selection.length != 1
         this.multiple = !selection.length
       },
       /** 新增按钮操作 */
@@ -633,7 +641,7 @@
         });
       },
       /** 提交按钮 */
-      submitForm: function() {
+      submitForm: function () {
         this.$refs["form"].validate(valid => {
           if (valid) {
             if (this.form.id != undefined) {
@@ -663,12 +671,13 @@
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning"
-        }).then(function() {
+        }).then(function () {
           return delOrderInput(ids);
         }).then(() => {
           this.getList();
           this.msgSuccess("删除成功");
-        }).catch(function() {});
+        }).catch(function () {
+        });
       },
       addTableItem() {
         this.tabItemId = "T" + this.RndNum(6); //生成以T开头的七位随机数
@@ -713,7 +722,7 @@
           this.$message.warning("请选择要删除的数据");
         }
       },
-      addPassengerItem(){
+      addPassengerItem() {
         this.tabItemId = "T" + this.RndNum(6); //生成以T开头的七位随机数
         this.form.orderInfoPassengers.push({
           passengerName: "",
@@ -749,7 +758,7 @@
 </script>
 <style scoped>
   .aa >>> .el-form-item__content {
-    margin-left:0px !important;
+    margin-left: 0px !important;
   }
 </style>
 

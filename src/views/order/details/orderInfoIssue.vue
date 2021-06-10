@@ -33,7 +33,8 @@
           size="mini"
           @click="handleAdd"
           v-hasPermi="['manual/order_info_issue/add']"
-        >新增</el-button>
+        >新增
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -43,7 +44,8 @@
           :disabled="single"
           @click="handleUpdate"
           v-hasPermi="['manual/order_info_issue/edit']"
-        >修改</el-button>
+        >修改
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -53,18 +55,19 @@
           :disabled="multiple"
           @click="handleDelete"
           v-hasPermi="['manual/order_info_issue/remove']"
-        >删除</el-button>
+        >删除
+        </el-button>
       </el-col>
     </el-row>
 
     <el-table v-loading="loading" :data="orderInfoIssueList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="id" prop="id" width="120" />
-      <el-table-column label="订单编码" prop="orderNo" width="100" />
-      <el-table-column label="政策id" prop="policyId" width="100" />
-      <el-table-column label="收款方式" prop="receiptMethod" width="100" />
-      <el-table-column label="收款账号" prop="receiptAccountNumber" width="100" />
-      <el-table-column label="供应商" prop="arrCity" width="100" />
+      <el-table-column type="selection" width="55" align="center"/>
+      <el-table-column label="id" prop="id" width="120"/>
+      <el-table-column label="订单编码" prop="orderNo" width="100"/>
+      <el-table-column label="政策id" prop="policyId" width="100"/>
+      <el-table-column label="收款方式" prop="receiptMethod" width="100"/>
+      <el-table-column label="收款账号" prop="receiptAccountNumber" width="100"/>
+      <el-table-column label="供应商" prop="arrCity" width="100"/>
       <el-table-column label="状态" align="supplierCode" width="100">
         <template slot-scope="scope">
           <el-switch
@@ -88,14 +91,16 @@
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['manual/order_info_issue/edit']"
-          >修改</el-button>
+          >修改
+          </el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['manual/order_info_issue/remove']"
-          >删除</el-button>
+          >删除
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -112,10 +117,10 @@
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="收款方式" prop="receiptMethod">
-          <el-input v-model="form.receiptMethod" placeholder="请输入类型" />
+          <el-input v-model="form.receiptMethod" placeholder="请输入类型"/>
         </el-form-item>
         <el-form-item label="收款账号" prop="receiptAccountNumber">
-          <el-input v-model="form.receiptAccountNumber" placeholder="请输入航司" />
+          <el-input v-model="form.receiptAccountNumber" placeholder="请输入航司"/>
         </el-form-item>
 
 
@@ -125,7 +130,8 @@
               v-for="dict in statusOptions"
               :key="dict.dictValue"
               :label="dict.dictValue"
-            >{{dict.dictLabel}}</el-radio>
+            >{{dict.dictLabel}}
+            </el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="备注">
@@ -141,7 +147,14 @@
 </template>
 
 <script>
-  import { listOrderInfoIssue, getOrderInfoIssue, delOrderInfoIssue, addOrderInfoIssue, updateOrderInfoIssue, changeOrderInfoIssue } from "@/api/order/details/orderInfoIssue";
+  import {
+    listOrderInfoIssue,
+    getOrderInfoIssue,
+    delOrderInfoIssue,
+    addOrderInfoIssue,
+    updateOrderInfoIssue,
+    changeOrderInfoIssue
+  } from "@/api/order/details/orderInfoIssue";
 
   export default {
     name: "OrderInfoIssue",
@@ -210,11 +223,11 @@
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning"
-        }).then(function() {
+        }).then(function () {
           return changeOrderInfoIssue(row.id, row.status);
         }).then(() => {
           this.msgSuccess(text + "成功");
-        }).catch(function() {
+        }).catch(function () {
           row.status = row.status === "0" ? "1" : "0";
         });
       },
@@ -245,7 +258,7 @@
       // 多选框选中数据
       handleSelectionChange(selection) {
         this.ids = selection.map(item => item.id)
-        this.single = selection.length!=1
+        this.single = selection.length != 1
         this.multiple = !selection.length
       },
       /** 新增按钮操作 */
@@ -265,7 +278,7 @@
         });
       },
       /** 提交按钮 */
-      submitForm: function() {
+      submitForm: function () {
         this.$refs["form"].validate(valid => {
           if (valid) {
             if (this.form.id != undefined) {
@@ -295,12 +308,13 @@
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning"
-        }).then(function() {
+        }).then(function () {
           return delOrderInfoIssue(ids);
         }).then(() => {
           this.getList();
           this.msgSuccess("删除成功");
-        }).catch(function() {});
+        }).catch(function () {
+        });
       }
     }
   };

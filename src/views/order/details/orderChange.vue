@@ -33,7 +33,8 @@
           size="mini"
           @click="handleAdd"
           v-hasPermi="['manual/order_change/add']"
-        >新增</el-button>
+        >新增
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -43,14 +44,15 @@
           :disabled="multiple"
           @click="handleDelete"
           v-hasPermi="['manual/order_change/remove']"
-        >删除</el-button>
+        >删除
+        </el-button>
       </el-col>
     </el-row>
 
     <el-table v-loading="loading" :data="orderChangeList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="id" prop="id" width="120" />
-      <el-table-column label="订单编码" prop="orderNo" width="100" />
+      <el-table-column type="selection" width="55" align="center"/>
+      <el-table-column label="id" prop="id" width="120"/>
+      <el-table-column label="订单编码" prop="orderNo" width="100"/>
       <el-table-column label="状态" align="supplierCode" width="100">
         <template slot-scope="scope">
           <el-switch
@@ -74,14 +76,16 @@
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['manual/order_info_issue/edit']"
-          >修改</el-button>
+          >修改
+          </el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['manual/order_info_issue/remove']"
-          >删除</el-button>
+          >删除
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -95,18 +99,77 @@
     />
 
     <!-- 添加或修改角色配置对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="900px" append-to-body>
+    <el-dialog :title="title" :visible.sync="open" width="1000px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+
+        <el-card>
+          <div slot="header">
+            <span>订单信息</span>
+          </div>
+
+
+          <el-card>
+            <div slot="header">
+              <span>航程信息</span>
+            </div>
+            <el-table v-loading="loading" :data="orderSegmentList" @selection-change="handleSelectionChange">
+              <el-table-column label="id" prop="id" width="80"/>
+              <el-table-column label="订单编码" prop="orderNo" width="80"/>
+              <el-table-column label="订单id" prop="orderInfoId" width="80"/>
+              <el-table-column label="航程序号" prop="journeySequence" width="80"/>
+              <el-table-column label="航段序号" prop="segmentSequence" width="80"/>
+              <el-table-column label="销售航司" prop="marketingAirline" width="80"/>
+              <el-table-column label="航班号" prop="flightNumber" width="80"/>
+              <el-table-column label="出发机场" prop="arrAirport" width="80"/>
+              <el-table-column label="舱等" prop="cabinGrade" width="80"/>
+              <el-table-column label="舱位" prop="cabin" width="80"/>
+              <el-table-column label="出发时间" prop="depTime" width="80"/>
+              <el-table-column label="抵达时间" prop="arrTime" width="80"/>
+              <el-table-column label="是否共享" prop="codeShare" width="80"/>
+              <el-table-column label="共享航司" prop="operatingAirline" width="80"/>
+              <el-table-column label="共享航班号" prop="operatingFlightNumber" width="80"/>
+              <el-table-column label="出发航站楼" prop="depTerminal" width="80"/>
+              <el-table-column label="飞行时长" prop="durationMinute" width="80"/>
+              <el-table-column label="经停分钟数" prop="stopMinute" width="80"/>
+            </el-table>
+          </el-card>
+
+          <el-card>
+            <div slot="header">
+              <span>乘客信息</span>
+            </div>
+            <el-table v-loading="loading" :data="orderPassengerList" @selection-change="handleSelectionChange">
+              <el-table-column label="id" prop="id" width="80"/>
+              <el-table-column label="订单编码" prop="orderNo" width="80"/>
+              <el-table-column label="订单id" prop="orderInfoId" width="80"/>
+              <el-table-column label="乘客姓名" prop="passengerName" width="80"/>
+              <el-table-column label="性别" prop="gender" width="80"/>
+              <el-table-column label="证书发行国家" prop="certissueCountry" width="80"/>
+              <el-table-column label="证书类型" prop="certType" width="80"/>
+              <el-table-column label="证书编号" prop="certNo" width="80"/>
+              <el-table-column label="证件有效期" prop="cardExpired" width="80"/>
+              <el-table-column label="生日" prop="birthday" width="80"/>
+              <el-table-column label="乘客类别" prop="passengerType" width="80"/>
+              <el-table-column label="乘客移动号码" prop="passengerMobile" width="80"/>
+              <el-table-column label="国籍" prop="nationality" width="80"/>
+            </el-table>
+          </el-card>
+
+          <div>
+          </div>
+        </el-card>
+
         <el-form-item label="最迟确认时间" prop="latestIssueTime">
-          <el-input v-model="form.latestIssueTime" placeholder="请输入类型" />
+          <el-input v-model="form.latestIssueTime" placeholder="请输入类型"/>
         </el-form-item>
         <el-form-item label="申请改签原因" prop="applyChangeReason">
-          <el-input v-model="form.applyChangeReason" placeholder="请输入申请改签原因" />
+          <el-input v-model="form.applyChangeReason" placeholder="请输入申请改签原因"/>
         </el-form-item>
 
-        <el-card >
-          <div slot="header" >
-            <span>航段信息</span>
+
+        <el-card>
+          <div slot="header">
+            <span>改签航段信息</span>
           </div>
           <div>
 
@@ -128,9 +191,9 @@
                   <i style="color:#F56C6C;">*</i>
                 </template>
                 <template slot-scope="scope">
-                  <el-form-item  class="aa"
-                                 :prop="'orderInfoSegments.' + scope.$index + '.journeySequence'"
-                                 :rules="form.orderInfoSegments.journeySequence"
+                  <el-form-item class="aa"
+                                :prop="'orderInfoSegments.' + scope.$index + '.journeySequence'"
+                                :rules="form.orderInfoSegments.journeySequence"
                   >
                     <el-input
                       type="text"
@@ -322,7 +385,8 @@
               v-for="dict in statusOptions"
               :key="dict.dictValue"
               :label="dict.dictValue"
-            >{{dict.dictLabel}}</el-radio>
+            >{{dict.dictLabel}}
+            </el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="备注">
@@ -338,7 +402,14 @@
 </template>
 
 <script>
-  import { listOrderChange, getOrderChange, delOrderChange, addOrderChange, updateOrderChange, changeOrderChange } from "@/api/order/details/orderChange";
+  import {
+    listOrderChange,
+    getOrderChange,
+    delOrderChange,
+    addOrderChange,
+    updateOrderChange,
+    changeOrderChange
+  } from "@/api/order/details/orderChange";
 
   export default {
     name: "OrderChange",
@@ -366,6 +437,10 @@
         dateRange: [],
         // 状态数据字典
         statusOptions: [],
+        //订单航段信息
+        orderSegmentList: [],
+        //订单乘客信息
+        orderPassengerList: [],
         // 查询参数
         queryParams: {
           current: 1,
@@ -373,7 +448,9 @@
         },
         // 表单参数
         form: {
-          orderInfoSegments:[]
+          orderInfoSegments: [],
+          orderSegmentList: [],
+          orderPassengerList: []
         },
         // 表单校验
         rules: {
@@ -409,11 +486,11 @@
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning"
-        }).then(function() {
+        }).then(function () {
           return changeOrderChange(row.id, row.status);
         }).then(() => {
           this.msgSuccess(text + "成功");
-        }).catch(function() {
+        }).catch(function () {
           row.status = row.status === "0" ? "1" : "0";
         });
       },
@@ -445,7 +522,7 @@
       // 多选框选中数据
       handleSelectionChange(selection) {
         this.ids = selection.map(item => item.id)
-        this.single = selection.length!=1
+        this.single = selection.length != 1
         this.multiple = !selection.length
       },
       /** 新增按钮操作 */
@@ -462,10 +539,14 @@
           this.form = response.data;
           this.open = true;
           this.title = "修改站点";
+
+          const orderDetailsVo = response.data.orderDetailsVo;
+          this.orderSegmentList = orderDetailsVo.orderInfoSegments;
+          this.orderPassengerList = orderDetailsVo.orderInfoPassengers;
         });
       },
       /** 提交按钮 */
-      submitForm: function() {
+      submitForm: function () {
         this.$refs["form"].validate(valid => {
           if (valid) {
             if (this.form.id != undefined) {
@@ -495,12 +576,13 @@
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning"
-        }).then(function() {
+        }).then(function () {
           return delOrderChange(ids);
         }).then(() => {
           this.getList();
           this.msgSuccess("删除成功");
-        }).catch(function() {});
+        }).catch(function () {
+        });
       },
       addTableItem() {
         this.tabItemId = "T" + this.RndNum(6); //生成以T开头的七位随机数
@@ -550,7 +632,7 @@
 </script>
 <style scoped>
   .aa >>> .el-form-item__content {
-    margin-left:0px !important;
+    margin-left: 0px !important;
   }
 </style>
 
