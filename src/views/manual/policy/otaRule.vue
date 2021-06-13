@@ -141,7 +141,7 @@
 
 
         <!--白名单 -->
-        <div v-show ="this.form.ruleType =='OTA-0' ">
+        <div v-show ="this.form.ruleType =='MANUAL_OTA-0' ">
 
           <el-row>
             <el-col :span="12">
@@ -220,7 +220,7 @@
 
 
         <!--黑名单 -->
-        <div v-show ="this.form.ruleType =='OTA-1' ">
+        <div v-show ="this.form.ruleType =='MANUAL_OTA-1' ">
 
           <el-row>
             <el-col :span="12">
@@ -296,7 +296,7 @@
         </el-row>
         </div>
 
-        <div v-show ="this.form.ruleType =='OTA-2' ">
+        <div v-show ="this.form.ruleType =='MANUAL_OTA-2' ">
           <el-row>
             <el-col :span="12">
               <el-form-item label="数据来源" prop="sourceType">
@@ -456,7 +456,7 @@
 
 
         <!--OTA发布价格-->
-        <div v-show ="this.form.ruleType =='OTA-3' ">
+        <div v-show ="this.form.ruleType =='MANUAL_OTA-3' ">
 
           <el-row>
             <el-col :span="12">
@@ -577,7 +577,7 @@
     },
     created() {
       this.getList();
-      this.getDicts("OTA_RULE_TYPE").then(response => {
+      this.getDicts("MANUAL_OTA_RULE_TYPE").then(response => {
         this.ruleOptions = response.data;
       });
       this.getDicts("sys_normal_disable").then(response => {

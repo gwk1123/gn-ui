@@ -81,7 +81,7 @@
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['direct/resign_config/add']"
+          v-hasPermi="['manual/resign_config/add']"
         >新增</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -91,7 +91,7 @@
           size="mini"
           :disabled="single"
           @click="handleUpdate"
-          v-hasPermi="['direct/resign_config/edit']"
+          v-hasPermi="['manual/resign_config/edit']"
         >修改</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -101,7 +101,7 @@
           size="mini"
           :disabled="multiple"
           @click="handleDelete"
-          v-hasPermi="['direct/resign_config/remove']"
+          v-hasPermi="['manual/resign_config/remove']"
         >删除</el-button>
       </el-col>
     </el-row>
@@ -136,14 +136,14 @@
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['direct/resign_config/edit']"
+            v-hasPermi="['manual/resign_config/edit']"
           >修改</el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['direct/resign_config/remove']"
+            v-hasPermi="['manual/resign_config/remove']"
           >删除</el-button>
         </template>
       </el-table-column>
@@ -198,7 +198,7 @@
 </template>
 
 <script>
-  import { listResignConfig, getResignConfig, delResignConfig, addResignConfig, updateResignConfig, changeResignConfig } from "@/api/direct/policy/resignConfig";
+  import { listResignConfig, getResignConfig, delResignConfig, addResignConfig, updateResignConfig, changeResignConfig } from "@/api/manual/policy/resignConfig";
 
   export default {
     name: "ResignConfig",
@@ -256,6 +256,9 @@
       /** 查询角色列表 */
       getList() {
         this.loading = true;
+        const path = this.$route.path;
+        const otaStr = path.split("/")[2];
+        this.queryParams.otaSiteCode = (otaStr.split("_")[1]).toUpperCase( );
         listResignConfig(this.addDateRange(this.queryParams, this.dateRange)).then(
           responseData => {
             const response = responseData.data;
@@ -335,6 +338,11 @@
       submitForm: function() {
         this.$refs["form"].validate(valid => {
           if (valid) {
+            const path = this.$route.path;
+            //跟据路由的路径获取平台和站点
+            const otaStr = path.split("/")[2];
+            // this.form.otaCode = (otaStr.split("_")[0]).toUpperCase( );
+            this.form.otaSiteCode = (otaStr.split("_")[1]).toUpperCase( );
             if (this.form.id != undefined) {
               updateResignConfig(this.form).then(response => {
                 if (response.code === 200) {

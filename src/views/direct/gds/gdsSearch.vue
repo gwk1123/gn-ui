@@ -154,6 +154,9 @@
         if (column.label === 'CT002') {
           return column.label = '携程二部';
         }
+        if (column.label === 'QNPT') {
+          return column.label = '去哪儿普通';
+        }
       },
       /** 查询角色列表 */
       getList() {
@@ -226,7 +229,7 @@
                 const gdsHtmlStr = "<div>"+
                   "<p>"+"票面价: "+gdsItem.adultPriceGds+
                   "<br/>"+"税费: "+gdsItem.adultTaxGds+
-                  "<br/>"+"运价类型: "+gdsItem.adultPriceGds+
+                  "<br/>"+"运价类型: "+gdsItem.fareType+
                   "<br/>"+"行李额: "+gdsItem.adultTaxGds+"</p>"+
                   "</div>";
                 const gdsPcc = gdsItem.gds+"-"+gdsItem.pcc;
