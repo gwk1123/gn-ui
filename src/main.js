@@ -17,6 +17,7 @@ import permission from './directive/permission'
 import './assets/icons' // icon
 import './permission' // permission control
 import {getDicts} from "@/api/system/data";
+import {listOtaSite} from "@/api/direct/basic/otaSite";
 import {getDictTypeBySysDictData} from "@/api/system/data";
 import {
   parseTime,
@@ -31,6 +32,7 @@ import Pagination from "@/components/Pagination";
 
 // 全局方法挂载
 Vue.prototype.getDicts = getDicts
+Vue.prototype.listOtaSite = listOtaSite
 Vue.prototype.getDictTypeBySysDictData = getDictTypeBySysDictData
 Vue.prototype.parseTime = parseTime
 Vue.prototype.resetForm = resetForm

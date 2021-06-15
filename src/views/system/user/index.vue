@@ -78,24 +78,6 @@
               v-hasPermi="['system/user/remove']"
             >删除</el-button>
           </el-col>
-          <el-col :span="1.5">
-            <el-button
-              type="info"
-              icon="el-icon-upload2"
-              size="mini"
-              @click="handleImport"
-              v-hasPermi="['system/user/import']"
-            >导入</el-button>
-          </el-col>
-          <el-col :span="1.5">
-            <el-button
-              type="warning"
-              icon="el-icon-download"
-              size="mini"
-              @click="handleExport"
-              v-hasPermi="['system/user/export']"
-            >导出</el-button>
-          </el-col>
           <div class="top-right-btn">
             <el-tooltip class="item" effect="dark" content="刷新" placement="top">
               <el-button size="mini" circle icon="el-icon-refresh" @click="handleQuery" />

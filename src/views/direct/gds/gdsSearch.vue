@@ -51,14 +51,25 @@
         </el-form-item>
       </el-form-item>
 
-      <el-form-item label="站点" prop="otaSites">
-        <el-input
-          v-model="queryParams.otaSites"
-          placeholder="请输入站点"
-          clearable
-          size="small"
-          style="width: 150px"
-        />
+<!--      <el-form-item label="站点" prop="otaSites">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.otaSites"-->
+<!--          placeholder="请输入站点"-->
+<!--          clearable-->
+<!--          size="small"-->
+<!--          style="width: 150px"-->
+<!--        />-->
+<!--      </el-form-item>-->
+
+      <el-form-item label="站点">
+        <el-select v-model="queryParams.otaSites" multiple placeholder="请选择">
+          <el-option
+            v-for="item in otaSiteOptions"
+            :key="item.otaSiteCode"
+            :label="item.otaSiteCname"
+            :value="item.otaSiteCode"
+          ></el-option>
+        </el-select>
       </el-form-item>
 
 
@@ -116,6 +127,7 @@
         // OTA表格数据
         gdsSearchList: [],
         sibeTripTypeOptions: [],
+        otaSiteOptions: [],
         cols: [],
         // 弹出层标题
         open: false,
@@ -135,6 +147,10 @@
     created() {
       this.getDicts("sibe_trip_type").then(response => {
         this.sibeTripTypeOptions = response.data;
+      });
+      this.listOtaSite().then(response => {
+        const responseData = response.data;
+        this.otaSiteOptions = responseData.records;
       });
       if( this.queryParams.tripType ==undefined || this.queryParams.fromCity ==undefined
       || this.queryParams.toCity ==undefined || this.queryParams.fromDate ==undefined ||
@@ -162,6 +178,15 @@
       getList() {
         this.gdsSearchList = [];
         this.loading = true;
+        const otaSiteArray=this.queryParams.otaSites
+        if(otaSiteArray != undefined || otaSiteArray != '') {
+          let siteStr='';
+          for (var item in otaSiteArray) {
+            siteStr = otaSiteArray[item]+","+siteStr
+          }
+          this.queryParams.otaSites = siteStr;
+        }
+
         listGdsSearch(this.queryParams).then(
           responseData => {
             const response = responseData.data;
