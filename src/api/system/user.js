@@ -82,7 +82,7 @@ export function changeUserStatus(userId, status) {
 // 查询用户个人信息
 export function getUserProfile() {
   return request({
-    url: '/system/user/profile',
+    url: '/system/user/personal_info',
     method: 'get'
   })
 }
