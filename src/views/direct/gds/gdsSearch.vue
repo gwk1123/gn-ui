@@ -178,14 +178,6 @@
       getList() {
         this.gdsSearchList = [];
         this.loading = true;
-        const otaSiteArray=this.queryParams.otaSites
-        if(otaSiteArray != undefined || otaSiteArray != '') {
-          let siteStr='';
-          for (var item in otaSiteArray) {
-            siteStr = otaSiteArray[item]+","+siteStr
-          }
-          this.queryParams.otaSites = siteStr;
-        }
 
         listGdsSearch(this.queryParams).then(
           responseData => {
