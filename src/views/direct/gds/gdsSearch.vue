@@ -51,16 +51,6 @@
         </el-form-item>
       </el-form-item>
 
-<!--      <el-form-item label="站点" prop="otaSites">-->
-<!--        <el-input-->
-<!--          v-model="queryParams.otaSites"-->
-<!--          placeholder="请输入站点"-->
-<!--          clearable-->
-<!--          size="small"-->
-<!--          style="width: 150px"-->
-<!--        />-->
-<!--      </el-form-item>-->
-
       <el-form-item label="站点">
         <el-select v-model="queryParams.otaSites" multiple placeholder="请选择">
           <el-option
