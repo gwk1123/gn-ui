@@ -12,6 +12,7 @@
               clearable
               size="small"
               style="width: 240px"
+              @change='refreshForm'
             >
               <el-option
                 v-for="dict in ruleOptions"
@@ -82,19 +83,42 @@
       <el-table-column label="id" prop="id" width="120" />
       <el-table-column label="规则类型" prop="ruleType" width="100" />
 
+      <div v-if="this.queryParams.ruleType == 'OTA-9'" >
+      <el-table-column prop="parameter1" label="限制中转次数" width="100" />
+      </div>
 
+      <div v-if="this.queryParams.ruleType == 'OTA-10'" >
+      <el-table-column prop="parameter1" label="中转时间" width="100" />
+      </div>
 
-      <el-table-column prop="parameter1" label="限制中转次数" width="100" >
-        <template scope="scope">
-          <div v-if="scope.row.ruleType == 'OTA-9'" >{{scope.row.parameter1}}</div>
-        </template>
-      </el-table-column>
+      <div v-if="this.queryParams.ruleType == 'OTA-12'" >
+        <el-table-column prop="parameter1" label="中转机场过滤" width="100" />
+      </div>
 
-      <el-table-column prop="parameter1" label="中转时间" width="100" >
-        <template scope="scope">
-          <div v-if="scope.row.ruleType == 'OTA-10'" >{{scope.row.parameter1}}</div>
-        </template>
-      </el-table-column>
+      <div v-if="this.queryParams.ruleType == 'OTA-13'" >
+        <el-table-column prop="parameter1" label="是否限制共享航司" width="100" />
+        <el-table-column prop="parameter2" label="除外共享航司航班号" width="100" />
+      </div>
+
+      <div v-if="this.queryParams.ruleType == 'OTA-14'" >
+        <el-table-column prop="parameter1" label="限制混合航司" width="100" />
+      </div>
+
+      <div v-if="this.queryParams.ruleType == 'OTA-16'" >
+        <el-table-column prop="parameter1" label="是否共享航司为空" width="100" />
+      </div>
+
+      <div v-if="this.queryParams.ruleType == 'OTA-33'" >
+        <el-table-column prop="parameter1" label="行程类型" width="100" />
+        <el-table-column prop="bothWaysFlag" label="双向标识" width="100" />
+        <el-table-column prop="origin" label="出发地" width="100" />
+        <el-table-column prop="destination" label="目的地" width="100" />
+        <el-table-column prop="parameter2" label="航司舱位" width="100" />
+        <el-table-column prop="travelPeriodFrom" label="开始旅行日期" width="100" />
+        <el-table-column prop="travelPeriodTo" label="结束旅行日期" width="100" />
+        <el-table-column prop="startTime" label="生效日期" width="100" />
+        <el-table-column prop="endTime" label="失效日期" width="100" />
+      </div>
 
 
 <!--      <el-table-column label="出发地" prop="origin" width="100" />-->
@@ -547,6 +571,9 @@
           this.getList();
           this.msgSuccess("删除成功");
         }).catch(function() {});
+      },
+      refreshForm: function(){
+        this.getList();
       }
  }
     // ruleTypeChange() {
