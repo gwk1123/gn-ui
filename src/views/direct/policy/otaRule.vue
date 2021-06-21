@@ -80,13 +80,29 @@
     <el-table v-loading="loading" :data="otaRuleList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="id" prop="id" width="120" />
-      <el-table-column label="规则类型" prop="bookGdsChannel" width="100" />
-      <el-table-column label="出发地" prop="origin" width="100" />
-      <el-table-column label="目的地" prop="destination" width="100" />
-      <el-table-column label="双向标识" prop="bothWaysFlag" width="100" />
-      <el-table-column label="开始旅行日期" prop="travelPeriodFrom" width="100" />
-      <el-table-column label="结束旅行日期" prop="travelPeriodTo" width="100" />
-      <el-table-column label="自定义内容一" prop="parameter1" width="100" />
+      <el-table-column label="规则类型" prop="ruleType" width="100" />
+
+
+
+      <el-table-column prop="parameter1" label="限制中转次数" width="100" >
+        <template scope="scope">
+          <div v-if="scope.row.ruleType == 'OTA-9'" >{{scope.row.parameter1}}</div>
+        </template>
+      </el-table-column>
+
+      <el-table-column prop="parameter1" label="中转时间" width="100" >
+        <template scope="scope">
+          <div v-if="scope.row.ruleType == 'OTA-10'" >{{scope.row.parameter1}}</div>
+        </template>
+      </el-table-column>
+
+
+<!--      <el-table-column label="出发地" prop="origin" width="100" />-->
+<!--      <el-table-column label="目的地" prop="destination" width="100" />-->
+<!--      <el-table-column label="双向标识" prop="bothWaysFlag" width="100" />-->
+<!--      <el-table-column label="开始旅行日期" prop="travelPeriodFrom" width="100" />-->
+<!--      <el-table-column label="结束旅行日期" prop="travelPeriodTo" width="100" />-->
+<!--      <el-table-column label="自定义内容一" prop="parameter1" width="100" />-->
       <el-table-column label="状态" align="center" width="100">
         <template slot-scope="scope">
           <el-switch
@@ -131,7 +147,7 @@
         <el-row>
           <el-form-item label="规则类型" prop="ruleType" label-width="150px">
             <el-select
-              v-model="queryParams.ruleType"
+              v-model="form.ruleType"
               placeholder="规则类型"
               clearable
               size="small"
@@ -149,7 +165,7 @@
 
 
         <!--中转时间过滤，仅仅针对多程-->
-        <div v-show ="this.queryParams.ruleType =='OTA-10' ">
+        <div v-show ="this.form.ruleType =='OTA-10' ">
         <el-row>
           <el-col :span="12">
             <el-form-item label="中转时间" prop="parameter1" label-width="150px">
@@ -160,7 +176,7 @@
         </div>
 
         <!--机场链接过滤，仅仅针对中转点，中转机场相同则不过滤-->
-        <div v-show ="this.queryParams.ruleType =='OTA-12' ">
+        <div v-show ="this.form.ruleType =='OTA-12' ">
           <el-row>
             <el-col :span="12">
               <el-form-item label="中转机场过滤" prop="parameter1" label-width="150px">
@@ -179,7 +195,7 @@
         <!--共享过滤-->
        <!--如果填写了除外共享航司航班号,则判断航段中的销售航司是否处于除外列表中-->
        <!--输入格式类似于AA100-500,600/BB200-400/AA700-->
-        <div v-show ="this.queryParams.ruleType =='OTA-13' ">
+        <div v-show ="this.form.ruleType =='OTA-13' ">
           <el-row>
               <el-form-item label="是否限制共享航司" prop="parameter1" label-width="150px">
                 <el-radio-group v-model="form.parameter1">
@@ -202,7 +218,7 @@
         </div>
 
             <!--限制混合航司-->
-        <div v-show ="this.queryParams.ruleType =='OTA-14' ">
+        <div v-show ="this.form.ruleType =='OTA-14' ">
           <el-row>
             <el-col :span="12">
               <el-form-item label="限制混合航司" prop="parameter1" label-width="150px">
@@ -219,7 +235,7 @@
         </div>
 
         <!--是否允许共享航司为空-->
-        <div v-show ="this.queryParams.ruleType =='OTA-16' ">
+        <div v-show ="this.form.ruleType =='OTA-16' ">
           <el-row>
             <el-col :span="14">
               <el-form-item label="是否共享航司为空" prop="parameter1" label-width="150px">
@@ -236,7 +252,7 @@
         </div>
 
        <!--限制中转次数-->
-        <div v-show ="this.queryParams.ruleType =='OTA-9' ">
+        <div v-show ="this.form.ruleType =='OTA-9' ">
           <el-row>
             <el-col :span="14">
                 <el-form-item label="限制中转次数" prop="parameter1" label-width="150px">
@@ -247,7 +263,7 @@
         </div>
 
           <!--航司航线黑名单-->
-        <div v-show ="this.queryParams.ruleType =='OTA-33' ">
+        <div v-show ="this.form.ruleType =='OTA-33' ">
           <el-row>
             <el-col :span="12">
               <el-form-item label="行程类型" prop="parameter1" label-width="150px">
@@ -389,9 +405,9 @@
         // 表单参数
         form: {},
         rules: {
-          ruleType: [
-            { required: true, message: "规则类型不能为空", trigger: "blur" }
-          ]
+          // ruleType: [
+          //   { required: true, message: "规则类型不能为空", trigger: "blur" }
+          // ]
         }
       };
     },
@@ -407,6 +423,9 @@
     methods: {
       getList() {
         this.loading = true;
+        const path = this.$route.path;
+        const otaStr = path.split("/")[2];
+        this.queryParams.otaSiteCode = (otaStr.split("_")[1]).toUpperCase();
         listOtaRule(this.addDateRange(this.queryParams)).then(
           responseData => {
             const response = responseData.data;
