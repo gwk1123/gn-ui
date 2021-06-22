@@ -195,7 +195,6 @@
                 '<tbody>';
 
               const segment= list[key].segmentInfo;
-              debugger;
               const segmentInfoList = segment.fromSegments;
               const  retSegments =segment.retSegments;
               if(retSegments.length > 0){
