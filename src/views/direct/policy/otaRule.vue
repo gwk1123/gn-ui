@@ -81,7 +81,12 @@
     <el-table v-loading="loading" :data="otaRuleList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="id" prop="id" width="120" />
-      <el-table-column label="规则类型" prop="ruleType" width="100" />
+
+      <el-table-column prop="ruleType" label="规则类型">
+        <template scope="scope">
+          {{ scope.row.ruleType | ruleTypeFilter }}
+        </template>
+      </el-table-column>
 
       <div v-if="this.queryParams.ruleType == 'OTA-9'" >
       <el-table-column prop="parameter1" label="限制中转次数" width="100" />
@@ -120,13 +125,6 @@
         <el-table-column prop="endTime" label="失效日期" width="100" />
       </div>
 
-
-<!--      <el-table-column label="出发地" prop="origin" width="100" />-->
-<!--      <el-table-column label="目的地" prop="destination" width="100" />-->
-<!--      <el-table-column label="双向标识" prop="bothWaysFlag" width="100" />-->
-<!--      <el-table-column label="开始旅行日期" prop="travelPeriodFrom" width="100" />-->
-<!--      <el-table-column label="结束旅行日期" prop="travelPeriodTo" width="100" />-->
-<!--      <el-table-column label="自定义内容一" prop="parameter1" width="100" />-->
       <el-table-column label="状态" align="center" width="100">
         <template slot-scope="scope">
           <el-switch
@@ -394,6 +392,8 @@
 
 <script >
   import { listOtaRule, getOtaRule, delOtaRule, addOtaRule, updateOtaRule, changeOtaRuleStatus } from "@/api/direct/policy/otaRule";
+
+  let ruleArray = [];
   export default {
     data() {
       return {
@@ -439,6 +439,7 @@
       this.getList();
       this.getDicts("direct_rule_type").then(response => {
         this.ruleOptions = response.data;
+        ruleArray = this.ruleOptions;
       });
       this.getDicts("sys_normal_disable").then(response => {
         this.statusOptions = response.data;
@@ -575,11 +576,17 @@
       refreshForm: function(){
         this.getList();
       }
- }
-    // ruleTypeChange() {
-    //     this.productType=this.queryParams.ruleType;
-    //     console.log(this.queryParams.ruleType)
-    //   }
+ },
+    filters: {
+      ruleTypeFilter(row) {
+        for (const item in ruleArray){
+          if(ruleArray[item].dictValue == row){
+            return ruleArray[item].dictLabel;
+          }
+        }
+        return '';
+      }
+    }
     };
 
 </script>
