@@ -142,9 +142,10 @@
         const responseData = response.data;
         this.otaSiteOptions = responseData.records;
       });
-      if( this.queryParams.tripType ==undefined || this.queryParams.fromCity ==undefined
-      || this.queryParams.toCity ==undefined || this.queryParams.fromDate ==undefined ||
-        this.queryParams.otaSites ==undefined ){
+      if( this.queryParams.tripType ==undefined || this.queryParams.tripType==''
+        || this.queryParams.fromCity ==undefined || this.queryParams.fromCity==''
+        || this.queryParams.toCity ==undefined  || this.queryParams.toCity == ''
+        || this.queryParams.fromDate ==undefined || this.queryParams.fromDate == ''){
         this.gdsSearchList = [];
         return ;
       }else {
