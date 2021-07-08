@@ -4,8 +4,8 @@
 
       <el-form-item label="状态" prop="status">
         <el-select
-          v-model="queryParams.status"
-          placeholder="GDS状态"
+          v-model="queryParams.refundStatus"
+          placeholder="退票状态"
           clearable
           size="small"
           style="width: 240px"
@@ -32,7 +32,7 @@
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['manual/order_info_issue/add']"
+          v-hasPermi="['manual/order_refund/add']"
         >新增
         </el-button>
       </el-col>
@@ -43,20 +43,45 @@
           size="mini"
           :disabled="multiple"
           @click="handleDelete"
-          v-hasPermi="['manual/order_info_issue/remove']"
+          v-hasPermi="['manual/order_refund/remove']"
         >删除
         </el-button>
       </el-col>
     </el-row>
 
-    <el-table v-loading="loading" :data="orderInfoIssueList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="orderRefundList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center"/>
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+        <template slot-scope="scope">
+          <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-edit"
+            @click="handleUpdate(scope.row)"
+            v-hasPermi="['manual/order_refund/edit']"
+          >修改
+          </el-button>
+          <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-delete"
+            @click="handleDelete(scope.row)"
+            v-hasPermi="['manual/order_refund/remove']"
+          >删除
+          </el-button>
+        </template>
+      </el-table-column>
+
       <el-table-column label="id" prop="id" width="120"/>
-      <el-table-column label="订单编码" prop="orderNo" width="100"/>
-      <el-table-column label="政策id" prop="policyId" width="100"/>
-      <el-table-column label="收款方式" prop="receiptMethod" width="100"/>
-      <el-table-column label="收款账号" prop="receiptAccountNumber" width="100"/>
-      <el-table-column label="供应商" prop="arrCity" width="100"/>
+      <el-table-column label="GDS订单id" prop="orderNo" width="100"/>
+      <el-table-column label="来源站点" prop="otaSiteCode" width="100"/>
+      <el-table-column label="OTA退单号" prop="otaRefundNo" width="100"/>
+      <el-table-column label="GDS订单id" prop="orderNo" width="100"/>
+      <el-table-column label="关联订单id" prop="orderInfoId" width="100"/>
+      <el-table-column label="申请原因" prop="applyRefundReason" width="100"/>
+      <el-table-column label="退票状态" prop="refundStatus" width="100"/>
+      <el-table-column label="退票申请时间" prop="applyDatetime" width="100"/>
+
       <el-table-column label="状态" align="supplierCode" width="100">
         <template slot-scope="scope">
           <el-switch
@@ -72,26 +97,6 @@
           <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
-        <template slot-scope="scope">
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-edit"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['manual/order_info_issue/edit']"
-          >修改
-          </el-button>
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-delete"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['manual/order_info_issue/remove']"
-          >删除
-          </el-button>
-        </template>
-      </el-table-column>
     </el-table>
 
     <pagination
@@ -103,14 +108,56 @@
     />
 
     <!-- 添加或修改角色配置对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :title="title" :visible.sync="open" width="1000px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="收款方式" prop="receiptMethod">
-          <el-input v-model="form.receiptMethod" placeholder="请输入收款方式"/>
-        </el-form-item>
-        <el-form-item label="收款账号" prop="receiptAccountNumber">
-          <el-input v-model="form.receiptAccountNumber" placeholder="请输入收款账号"/>
-        </el-form-item>
+
+
+        <el-row>
+          <el-col :span="6">
+            <el-form-item label="关联订单id" prop="otaSiteCode">
+              <el-input v-model="form.orderInfoId" placeholder="请输入大写字母" disabled="disabled"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="GDS的订单号" prop="otaOrderNo">
+              <el-input v-model="form.otaOrderNo" placeholder="请输入大写字母"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="出票ID" prop="urgency">
+              <el-input v-model="form.orderInfoIssueId" placeholder="只能录入航司二字码"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="OTA退单号" prop="urgency">
+              <el-input v-model="form.otaRefundNo" placeholder="只能录入航司二字码"/>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+
+        <el-row>
+          <el-col :span="6">
+            <el-form-item label="站点" prop="otaSiteCode">
+              <el-input v-model="form.otaSiteCode" placeholder="请输入大写字母" disabled="disabled"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="申请原因" prop="otaOrderNo">
+              <el-input v-model="form.applyRefundReason" placeholder="请输入大写字母"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="退票状态" prop="urgency">
+              <el-input v-model="form.refundStatus" placeholder="只能录入航司二字码"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="退票申请时间" prop="urgency">
+              <el-input v-model="form.applyDatetime" placeholder="只能录入航司二字码"/>
+            </el-form-item>
+          </el-col>
+        </el-row>
 
 
         <el-form-item label="状态">
@@ -137,16 +184,16 @@
 
 <script>
   import {
-    listOrderInfoIssue,
-    getOrderInfoIssue,
-    delOrderInfoIssue,
-    addOrderInfoIssue,
-    updateOrderInfoIssue,
-    changeOrderInfoIssue
-  } from "@/api/order/details/orderInfoIssue";
+    listOrderRefund,
+    getOrderRefund,
+    delOrderRefund,
+    addOrderRefund,
+    updateOrderRefund,
+    changeOrderRefund
+  } from "@/api/order/details/orderRefund";
 
   export default {
-    name: "OrderInfoIssue",
+    name: "OrderRefund",
     data() {
       return {
         // 遮罩层
@@ -162,7 +209,7 @@
         // 总条数
         total: 0,
         // OTA表格数据
-        orderInfoIssueList: [],
+        orderRefundList: [],
         // 弹出层标题
         title: "",
         // 是否显示弹出层
@@ -171,13 +218,21 @@
         dateRange: [],
         // 状态数据字典
         statusOptions: [],
+        // //订单航段信息
+        // orderSegmentList: [],
+        // //订单乘客信息
+        // orderPassengerList: [],
         // 查询参数
         queryParams: {
           current: 1,
           size: 10
         },
         // 表单参数
-        form: {},
+        form: {
+          // orderInfoSegments: [],
+          // orderSegmentList: [],
+          // orderPassengerList: []
+        },
         // 表单校验
         rules: {
           type: [
@@ -196,10 +251,10 @@
       /** 查询角色列表 */
       getList() {
         this.loading = true;
-        listOrderInfoIssue(this.addDateRange(this.queryParams, this.dateRange)).then(
+        listOrderRefund(this.addDateRange(this.queryParams, this.dateRange)).then(
           responseData => {
             const response = responseData.data;
-            this.orderInfoIssueList = response.records;
+            this.orderRefundList = response.records;
             this.total = response.total;
             this.loading = false;
           }
@@ -213,7 +268,7 @@
           cancelButtonText: "取消",
           type: "warning"
         }).then(function () {
-          return changeOrderInfoIssue(row.id, row.status);
+          return changeOrderRefund(row.id, row.status);
         }).then(() => {
           this.msgSuccess(text + "成功");
         }).catch(function () {
@@ -229,6 +284,7 @@
       reset() {
         this.form = {
           status: "0",
+          // orderInfoSegments: [],
           remark: undefined
         };
         this.resetForm("form");
@@ -254,16 +310,16 @@
       handleAdd() {
         this.reset();
         this.open = true;
-        this.title = "添加站点";
+        this.title = "添加改签信息";
       },
       /** 修改按钮操作 */
       handleUpdate(row) {
         this.reset();
         const id = row.id || this.ids;
-        getOrderInfoIssue(id).then(response => {
+        getOrderRefund(id).then(response => {
           this.form = response.data;
           this.open = true;
-          this.title = "修改站点";
+          this.title = "修改退票";
         });
       },
       /** 提交按钮 */
@@ -271,7 +327,7 @@
         this.$refs["form"].validate(valid => {
           if (valid) {
             if (this.form.id != undefined) {
-              updateOrderInfoIssue(this.form).then(response => {
+              updateOrderRefund(this.form).then(response => {
                 if (response.code === 200) {
                   this.msgSuccess("修改成功");
                   this.open = false;
@@ -279,7 +335,7 @@
                 }
               });
             } else {
-              addOrderInfoIssue(this.form).then(response => {
+              addOrderRefund(this.form).then(response => {
                 if (response.code === 200) {
                   this.msgSuccess("新增成功");
                   this.open = false;
@@ -298,7 +354,7 @@
           cancelButtonText: "取消",
           type: "warning"
         }).then(function () {
-          return delOrderInfoIssue(ids);
+          return delOrderRefund(ids);
         }).then(() => {
           this.getList();
           this.msgSuccess("删除成功");
@@ -308,4 +364,5 @@
     }
   };
 </script>
+
 
