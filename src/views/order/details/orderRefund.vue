@@ -51,7 +51,7 @@
 
     <el-table v-loading="loading" :data="orderRefundList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center"/>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column label="操作" width="120">
         <template slot-scope="scope">
           <el-button
             size="mini"
@@ -111,10 +111,9 @@
     <el-dialog :title="title" :visible.sync="open" width="1000px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
 
-
         <el-row>
           <el-col :span="6">
-            <el-form-item label="关联订单id" prop="otaSiteCode">
+            <el-form-item label="关联订单id" prop="orderInfoId">
               <el-input v-model="form.orderInfoId" placeholder="请输入大写字母" disabled="disabled"/>
             </el-form-item>
           </el-col>
@@ -124,12 +123,12 @@
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item label="出票ID" prop="urgency">
+            <el-form-item label="出票ID" prop="orderInfoIssueId">
               <el-input v-model="form.orderInfoIssueId" placeholder="只能录入航司二字码"/>
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item label="OTA退单号" prop="urgency">
+            <el-form-item label="OTA退单号" prop="otaRefundNo">
               <el-input v-model="form.otaRefundNo" placeholder="只能录入航司二字码"/>
             </el-form-item>
           </el-col>
@@ -143,18 +142,13 @@
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item label="申请原因" prop="otaOrderNo">
+            <el-form-item label="申请原因" prop="applyRefundReason">
               <el-input v-model="form.applyRefundReason" placeholder="请输入大写字母"/>
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item label="退票状态" prop="urgency">
+            <el-form-item label="退票状态" prop="refundStatus">
               <el-input v-model="form.refundStatus" placeholder="只能录入航司二字码"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item label="退票申请时间" prop="urgency">
-              <el-input v-model="form.applyDatetime" placeholder="只能录入航司二字码"/>
             </el-form-item>
           </el-col>
         </el-row>
@@ -228,11 +222,7 @@
           size: 10
         },
         // 表单参数
-        form: {
-          // orderInfoSegments: [],
-          // orderSegmentList: [],
-          // orderPassengerList: []
-        },
+        form: {},
         // 表单校验
         rules: {
           type: [
@@ -284,7 +274,14 @@
       reset() {
         this.form = {
           status: "0",
-          // orderInfoSegments: [],
+          otaOrderNo: undefined,
+          orderInfoId: undefined,
+          orderInfoIssueId: undefined,
+          otaRefundNo: undefined,
+          otaSiteCode: undefined,
+          refundStatus: undefined,
+          applyRefundReason: undefined,
+          applyDatetime: undefined,
           remark: undefined
         };
         this.resetForm("form");
@@ -343,8 +340,7 @@
                 }
               });
             }
-          }
-        });
+          }        });
       },
       /** 删除按钮操作 */
       handleDelete(row) {
