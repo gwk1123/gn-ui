@@ -228,11 +228,17 @@
             </el-col>
           </el-row>
           <el-row>
-            <el-col :span="12">
-              <el-form-item label="行程类型" prop="parameter2" label-width="150px">
-                <el-input v-model="form.parameter2" placeholder="请输入大写字母" />
-              </el-form-item>
-            </el-col>
+              <el-col :span="12">
+                <el-form-item label="行程类型" prop="parameter2" label-width="150px">
+                  <el-radio-group v-model="form.parameter2">
+                    <el-radio
+                      v-for="dict in tripTypeOptions"
+                      :key="dict.dictValue"
+                      :label="dict.dictValue"
+                    >{{dict.dictLabel}}</el-radio>
+                  </el-radio-group>
+                </el-form-item>
+              </el-col>
           </el-row>
           <el-row>
             <el-col :span="12">
@@ -317,7 +323,7 @@
               <el-form-item label="双向标识" prop="bothWaysFlag" label-width="150px">
                 <el-radio-group v-model="form.bothWaysFlag">
                   <el-radio
-                    v-for="dict in statusOptions"
+                    v-for="dict in bothWaysFlagOptions"
                     :key="dict.dictValue"
                     :label="dict.dictValue"
                   >{{dict.dictLabel}}</el-radio>
@@ -330,7 +336,7 @@
               <el-form-item label="飞行类型" prop="parameter1" label-width="150px">
                 <el-radio-group v-model="form.parameter1">
                   <el-radio
-                    v-for="dict in statusOptions"
+                    v-for="dict in flightTypeOptions"
                     :key="dict.dictValue"
                     :label="dict.dictValue"
                   >{{dict.dictLabel}}</el-radio>
@@ -340,7 +346,7 @@
           </el-row>
           <el-row>
             <el-col :span="12">
-              <el-form-item label="航司白名单" prop="parameter2" label-width="150px">
+              <el-form-item label="航司" prop="parameter2" label-width="150px">
                 <el-input v-model="form.parameter2" placeholder="请输入大写字母,多个航司/隔开" />
               </el-form-item>
             </el-col>
@@ -466,6 +472,9 @@
         dateRange: [],
         // 状态数据字典
         statusOptions: [],
+        bothWaysFlagOptions: [],
+        tripTypeOptions: [],
+        flightTypeOptions: [],
         // 查询参数
         queryParams: {
           current: 1,
@@ -495,6 +504,15 @@
       });
       this.getDicts("sys_normal_disable").then(response => {
         this.statusOptions = response.data;
+      });
+      this.getDicts("direct_flight_type").then(response => {
+        this.flightTypeOptions = response.data;
+      });
+      this.getDicts("direct_both_ways_flag").then(response => {
+        this.bothWaysFlagOptions = response.data;
+      });
+      this.getDicts("sibe_trip_type").then(response => {
+        this.tripTypeOptions = response.data;
       });
     },
     methods: {
@@ -615,7 +633,7 @@
           cancelButtonText: "取消",
           type: "warning"
         }).then(function() {
-          return delGds(ids);
+          return delGdsRule(ids);
         }).then(() => {
           this.getList();
           this.msgSuccess("删除成功");
