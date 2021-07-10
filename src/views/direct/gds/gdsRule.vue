@@ -8,6 +8,7 @@
           clearable
           size="small"
           style="width: 240px"
+          @change='refreshForm'
         >
           <el-option
             v-for="dict in ruleOptions"
@@ -51,16 +52,6 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="success"
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['direct/gds_rule/edit']"
-        >修改</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
           type="danger"
           icon="el-icon-delete"
           size="mini"
@@ -73,26 +64,7 @@
 
     <el-table v-loading="loading" :data="gdsRuleList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="id" prop="id" width="120" />
-      <el-table-column label="规则类型" prop="bookGdsChannel" width="100" />
-      <el-table-column label="出发地" prop="origin" width="100" />
-      <el-table-column label="目的地" prop="destination" width="100" />
-      <el-table-column label="双向标识" prop="bothWaysFlag" width="100" />
-      <el-table-column label="开始旅行日期" prop="effectiveFrom" width="100" />
-      <el-table-column label="结束旅行日期" prop="effectiveTo" width="100" />
-      <el-table-column label="自定义内容一" prop="parameter1" width="100" />
-      <el-table-column label="自定义内容二" prop="parameter2" width="100" />
-      <el-table-column label="状态" align="center" width="100">
-        <template slot-scope="scope">
-          <el-switch
-            v-model="scope.row.status"
-            active-value="0"
-            inactive-value="1"
-            @change="handleStatusChange(scope.row)"
-          ></el-switch>
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column label="操作" width="120">
         <template slot-scope="scope">
           <el-button
             size="mini"
@@ -108,6 +80,54 @@
             @click="handleDelete(scope.row)"
             v-hasPermi="['direct/gds_rule/remove']"
           >删除</el-button>
+        </template>
+      </el-table-column>
+      <el-table-column label="id" prop="id" width="50" />
+      <el-table-column prop="ruleType" label="规则类型" align="center" class-name="small-padding fixed-width"  >
+        <template scope="scope">
+          {{ scope.row.ruleType | ruleTypeFilter }}
+        </template>
+      </el-table-column>
+      <el-table-column label="GDS系统" prop="gdsCode" align="center" class-name="small-padding fixed-width"/>
+      <div v-if="this.queryParams.ruleType == 'GDS-1'" >
+        <el-table-column label="PCC配置" prop="pccCode" align="center" class-name="small-padding fixed-width"/>
+        <el-table-column label="出发地" prop="origin" align="center" class-name="small-padding fixed-width" />
+        <el-table-column label="目的地" prop="destination" align="center" class-name="small-padding fixed-width" />
+      </div>
+      <div v-if="this.queryParams.ruleType == 'GDS-2'" >
+        <el-table-column label="PCC配置" prop="pccCode" align="center" class-name="small-padding fixed-width" />
+        <el-table-column label="出发地" prop="origin" align="center" class-name="small-padding fixed-width" />
+        <el-table-column label="目的地" prop="destination" align="center" class-name="small-padding fixed-width" />
+        <el-table-column label="行程类型" prop="parameter2" align="center" class-name="small-padding fixed-width" />
+        <el-table-column label="方案数量" prop="parameter1" align="center" class-name="small-padding fixed-width"/>
+      </div>
+      <div v-if="this.queryParams.ruleType == 'GDS-3'" >
+        <el-table-column label="PCC配置" prop="pccCode" align="center" class-name="small-padding fixed-width" />
+        <el-table-column label="出发地" prop="origin" align="center" class-name="small-padding fixed-width" />
+        <el-table-column label="目的地" prop="destination" align="center" class-name="small-padding fixed-width" />
+        <el-table-column label="双向标识" prop="bothWaysFlag" align="center" class-name="small-padding fixed-width"/>
+        <el-table-column label="飞行类型" prop="parameter1" align="center" class-name="small-padding fixed-width" />
+        <el-table-column label="航司白名单" prop="parameter2" align="center" class-name="small-padding fixed-width" />
+        <el-table-column label="规则生效时间" prop="effectiveFrom" align="center" class-name="small-padding fixed-width" />
+        <el-table-column label="规则失效时间" prop="effectiveTo" align="center" class-name="small-padding fixed-width" />
+      </div>
+      <div v-if="this.queryParams.ruleType == 'GDS-4'" >
+        <el-table-column label="PCC配置" prop="pccCode" align="center" class-name="small-padding fixed-width" />
+        <el-table-column label="出发地" prop="origin" align="center" class-name="small-padding fixed-width" />
+        <el-table-column label="目的地" prop="destination" align="center" class-name="small-padding fixed-width" />
+        <el-table-column label="航司" prop="parameter1" align="center" class-name="small-padding fixed-width" />
+      </div>
+      <div v-if="this.queryParams.ruleType == 'GDS-5'" >
+        <el-table-column prop="parameter1" label="航司舱位黑名单时间" align="center" class-name="small-padding fixed-width" />
+      </div>
+      <el-table-column label="状态" align="center" width="100">
+        <template slot-scope="scope">
+          <el-switch
+            v-model="scope.row.status"
+            active-value="0"
+            inactive-value="1"
+            @change="handleStatusChange(scope.row)"
+          ></el-switch>
         </template>
       </el-table-column>
     </el-table>
@@ -127,7 +147,7 @@
         <el-row>
           <el-form-item label="规则类型" prop="ruleType" label-width="150px">
             <el-select
-              v-model="queryParams.ruleType"
+              v-model="form.ruleType"
               placeholder="规则类型"
               clearable
               size="small"
@@ -145,11 +165,11 @@
 
 
         <!--GDS-航线黑名单规则类型-->
-        <div v-show ="this.queryParams.ruleType =='GDS-7' ">
+        <div v-show ="this.form.ruleType =='GDS-1' ">
           <el-row>
             <el-col :span="12">
-              <el-form-item label="出票GDS系统" prop="gdsCode" label-width="150px">
-                <el-input v-model="form.gdsCode" placeholder="出票GDS系统" />
+              <el-form-item label="GDS系统" prop="gdsCode" label-width="150px">
+                <el-input v-model="form.gdsCode" placeholder="GDS系统" />
               </el-form-item>
             </el-col>
           </el-row>
@@ -178,10 +198,10 @@
 
 
         <!--限制方案数量-->
-        <div v-show ="this.queryParams.ruleType =='GDS-11' ">
+        <div v-show ="this.form.ruleType =='GDS-2' ">
           <el-row>
             <el-col :span="12">
-              <el-form-item label="出票GDS系统" prop="gdsCode" label-width="150px">
+              <el-form-item label="GDS系统" prop="gdsCode" label-width="150px">
                 <el-input v-model="form.gdsCode" placeholder="出票GDS系统" />
               </el-form-item>
             </el-col>
@@ -224,11 +244,11 @@
         </div>
 
         <!--航线航司黑名单-->
-        <div v-show ="this.queryParams.ruleType =='GDS-4' ">
+        <div v-show ="this.form.ruleType =='GDS-4' ">
           <el-row>
             <el-col :span="12">
-              <el-form-item label="出票GDS系统" prop="gdsCode" label-width="150px">
-                <el-input v-model="form.gdsCode" placeholder="出票GDS系统" />
+              <el-form-item label="GDS系统" prop="gdsCode" label-width="150px">
+                <el-input v-model="form.gdsCode" placeholder="GDS系统" />
               </el-form-item>
             </el-col>
           </el-row>
@@ -263,10 +283,10 @@
         </div>
 
         <!--航司航线白名单-->
-        <div v-show ="this.queryParams.ruleType =='GDS-30' ">
+        <div v-show ="this.form.ruleType =='GDS-3' ">
           <el-row>
             <el-col :span="12">
-              <el-form-item label="出票GDS系统" prop="gdsCode" label-width="150px">
+              <el-form-item label="GDS系统" prop="gdsCode" label-width="150px">
                 <el-input v-model="form.gdsCode" placeholder="出票GDS系统" />
               </el-form-item>
             </el-col>
@@ -320,8 +340,8 @@
           </el-row>
           <el-row>
             <el-col :span="12">
-              <el-form-item label="航司" prop="parameter2" label-width="150px">
-                <el-input v-model="form.parameter2" placeholder="请输入大写字母" />
+              <el-form-item label="航司白名单" prop="parameter2" label-width="150px">
+                <el-input v-model="form.parameter2" placeholder="请输入大写字母,多个航司/隔开" />
               </el-form-item>
             </el-col>
           </el-row>
@@ -341,43 +361,43 @@
           </el-row>
         </div>
 
-        <!--航司指定GDS来源设置-->
-        <div v-show ="this.queryParams.ruleType =='GDS-28' ">
-          <el-row>
-            <el-col :span="12">
-              <el-form-item label="出票GDS系统" prop="gdsCode" label-width="150px">
-                <el-input v-model="form.gdsCode" placeholder="出票GDS系统" />
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="12">
-              <el-form-item label="始发地" prop="origin" label-width="150px">
-                <el-input v-model="form.origin" placeholder="请输入大写字母" />
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="12">
-              <el-form-item label="目的地" prop="destination" label-width="150px">
-                <el-input v-model="form.destination" placeholder="请输入大写字母" />
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="12">
-              <el-form-item label="航司" prop="parameter1" label-width="150px">
-                <el-input v-model="form.parameter1" placeholder="请输入大写字母" />
-              </el-form-item>
-            </el-col>
-          </el-row>
-        </div>
+        <!--航司指定GDS来源设置（暂不用到）-->
+<!--        <div v-show ="this.queryParams.ruleType =='GDS-28' ">-->
+<!--          <el-row>-->
+<!--            <el-col :span="12">-->
+<!--              <el-form-item label="GDS系统" prop="gdsCode" label-width="150px">-->
+<!--                <el-input v-model="form.gdsCode" placeholder="出票GDS系统" />-->
+<!--              </el-form-item>-->
+<!--            </el-col>-->
+<!--          </el-row>-->
+<!--          <el-row>-->
+<!--            <el-col :span="12">-->
+<!--              <el-form-item label="始发地" prop="origin" label-width="150px">-->
+<!--                <el-input v-model="form.origin" placeholder="请输入大写字母" />-->
+<!--              </el-form-item>-->
+<!--            </el-col>-->
+<!--          </el-row>-->
+<!--          <el-row>-->
+<!--            <el-col :span="12">-->
+<!--              <el-form-item label="目的地" prop="destination" label-width="150px">-->
+<!--                <el-input v-model="form.destination" placeholder="请输入大写字母" />-->
+<!--              </el-form-item>-->
+<!--            </el-col>-->
+<!--          </el-row>-->
+<!--          <el-row>-->
+<!--            <el-col :span="12">-->
+<!--              <el-form-item label="航司" prop="parameter1" label-width="150px">-->
+<!--                <el-input v-model="form.parameter1" placeholder="请输入大写字母" />-->
+<!--              </el-form-item>-->
+<!--            </el-col>-->
+<!--          </el-row>-->
+<!--        </div>-->
 
         <!--航司舱位黑名单-->
-        <div v-show ="this.queryParams.ruleType =='GDS-18' ">
+        <div v-show ="this.form.ruleType =='GDS-5' ">
           <el-row>
             <el-col :span="12">
-              <el-form-item label="出票GDS系统" prop="gdsCode" label-width="150px">
+              <el-form-item label="GDS系统" prop="gdsCode" label-width="150px">
                 <el-input v-model="form.gdsCode" placeholder="出票GDS系统" />
               </el-form-item>
             </el-col>
@@ -418,6 +438,7 @@
 <script>
   import { listGdsRule, getGdsRule, delGdsRule, addGdsRule, updateGdsRule, changeGdsRuleStatus } from "@/api/direct/gds/gdsRule";
 
+  let ruleArray = [];
   export default {
     name: "GdsRule",
     data() {
@@ -470,6 +491,7 @@
       this.getList();
       this.getDicts("direct_rule_gds").then(response => {
         this.ruleOptions = response.data;
+        ruleArray = this.ruleOptions;
       });
       this.getDicts("sys_normal_disable").then(response => {
         this.statusOptions = response.data;
@@ -480,8 +502,9 @@
       getList() {
         this.loading = true;
         listGdsRule(this.addDateRange(this.queryParams, this.dateRange)).then(
-          response => {
-            this.gdsList = response.rows;
+          responseData => {
+            const response = responseData.data;
+            this.gdsRuleList = response.records;
             this.total = response.total;
             this.loading = false;
           }
@@ -597,6 +620,19 @@
           this.getList();
           this.msgSuccess("删除成功");
         }).catch(function() {});
+      },
+      refreshForm: function(){
+        this.getList();
+      }
+    },
+    filters: {
+      ruleTypeFilter(row) {
+        for (const item in ruleArray){
+          if(ruleArray[item].dictValue == row){
+            return ruleArray[item].dictLabel;
+          }
+        }
+        return '';
       }
     }
   };

@@ -10,6 +10,15 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
+      <el-form-item label="字典类型" prop="dictType">
+        <el-input
+          v-model="queryParams.dictType"
+          placeholder="请输入字典标签"
+          clearable
+          size="small"
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
       <el-form-item label="状态" prop="status">
         <el-select v-model="queryParams.status" placeholder="数据状态" clearable size="small">
           <el-option
@@ -214,6 +223,7 @@ export default {
     reset() {
       this.form = {
         dictCode: undefined,
+        dictType: undefined,
         dictLabel: undefined,
         dictValue: undefined,
         dictSort: 0,
@@ -230,8 +240,6 @@ export default {
     /** 重置按钮操作 */
     resetQuery() {
       this.resetForm("queryForm");
-      this.queryParams.dictType = this.defaultDictType;
-      this.handleQuery();
     },
     /** 新增按钮操作 */
     handleAdd() {

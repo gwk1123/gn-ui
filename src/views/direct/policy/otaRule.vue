@@ -1,9 +1,6 @@
 <template>
   <div class="app-container">
 
-
-
-
     <el-form :model="queryParams" ref="queryForm" v-show="showSearch" :inline="true">
           <el-form-item label="规则类型" prop="ruleType">
             <el-select
@@ -22,7 +19,6 @@
               />
             </el-select>
           </el-form-item>
-
 
       <el-form-item label="状态" prop="status">
         <el-select
