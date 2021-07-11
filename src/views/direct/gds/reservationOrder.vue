@@ -79,7 +79,7 @@
     />
 
     <!-- 操作日志详细 -->
-    <el-dialog :title="title" :visible.sync="open" width="900px" append-to-body>
+    <el-dialog :title="title" :visible.sync="open" width="1000px" append-to-body>
       <el-form ref="form" :model="form" label-width="100px" size="mini">
         <el-row>
           <el-col :span="4">
@@ -101,16 +101,16 @@
 
         <el-row>
           <el-col :span="4">
-            <el-form-item label="查询GDS系统：">{{ form.searchGdsChannel }}</el-form-item>
+            <el-form-item label="查询GDS：">{{ form.searchGdsChannel }}</el-form-item>
           </el-col>
           <el-col :span="4">
-            <el-form-item label="查询office号：">{{ form.searchOfficeNo }}</el-form-item>
+            <el-form-item label="查询配置号：">{{ form.searchOfficeNo }}</el-form-item>
           </el-col>
           <el-col :span="4">
-            <el-form-item label="订位GDS系统：">{{ form.bookGdsChannel }}</el-form-item>
+            <el-form-item label="订位GDS：">{{ form.bookGdsChannel }}</el-form-item>
           </el-col>
           <el-col :span="4">
-            <el-form-item label="订位office号：">{{ form.bookOfficeNo }}</el-form-item>
+            <el-form-item label="订位配置号：">{{ form.bookOfficeNo }}</el-form-item>
           </el-col>
           <el-col :span="4">
             <el-form-item label="订位PNR：">{{ form.bookPnrNo }}</el-form-item>
