@@ -81,6 +81,12 @@
     <!-- 操作日志详细 -->
     <el-dialog :title="title" :visible.sync="open" width="1000px" append-to-body>
       <el-form ref="form" :model="form" label-width="100px" size="mini">
+
+        <el-card>
+          <div slot="header">
+            <span>订单信息</span>
+          </div>
+          <div>
         <el-row>
           <el-col :span="4">
             <el-form-item label="站点: ">{{ form.otaSiteCode }}</el-form-item>
@@ -125,6 +131,252 @@
             <el-form-item label="创建时间：">{{ form.createTime }}</el-form-item>
           </el-col>
         </el-row>
+          </div>
+        </el-card>
+
+
+        <el-card>
+          <div slot="header">
+            <span>航段信息</span>
+          </div>
+          <div>
+
+            <el-table
+              :data="form.reservationSegments"
+              style="width: 100%"
+              border
+            >
+
+              <el-table-column align="center">
+                <template slot="header" slot-scope="scope">
+                  <span style="color:#2d65dc;">航程序号</span>
+                </template>
+                <template slot-scope="scope">
+                  <el-col >
+                    <el-form-item class="ro">{{ scope.row.journeySequence }}</el-form-item>
+                  </el-col>
+                </template>
+              </el-table-column>
+
+              <el-table-column align="center">
+                <template slot="header" slot-scope="scope">
+                  <span style="color:#2d65dc;">航段序号</span>
+                </template>
+                <template slot-scope="scope" >
+                  <el-col >
+                    <el-form-item class="ro">{{ scope.row.segmentSequence }}</el-form-item>
+                  </el-col>
+                </template>
+              </el-table-column>
+
+              <el-table-column align="center">
+                <template slot="header" slot-scope="scope">
+                  <span style="color:#2d65dc;">销售航司</span>
+                </template>
+                <template slot-scope="scope">
+                  <el-col >
+                    <el-form-item class="ro">{{ scope.row.marketingAirline }}</el-form-item>
+                  </el-col>
+                </template>
+              </el-table-column>
+
+              <el-table-column align="center" >
+                <template slot="header" slot-scope="scope">
+                  <span style="color:#2d65dc;">航班号</span>
+                </template>
+                <template slot-scope="scope">
+                  <el-col >
+                    <el-form-item class="ro">{{ scope.row.flightNumber }}</el-form-item>
+                  </el-col>
+                </template>
+              </el-table-column>
+
+              <el-table-column align="center">
+                <template slot="header" slot-scope="scope">
+                  <span style="color:#2d65dc;">出发机场</span>
+                </template>
+                <template slot-scope="scope">
+                  <el-col >
+                    <el-form-item class="ro">{{ scope.row.depAirport }}</el-form-item>
+                  </el-col>
+                </template>
+              </el-table-column>
+
+              <el-table-column align="center">
+                <template slot="header" slot-scope="scope">
+                  <span style="color:#2d65dc;">到达机场</span>
+                </template>
+                <template slot-scope="scope">
+                  <el-col >
+                    <el-form-item class="ro">{{ scope.row.arrAirport }}</el-form-item>
+                  </el-col>
+                </template>
+              </el-table-column>
+
+              <el-table-column align="center">
+                <template slot="header" slot-scope="scope">
+                  <span style="color:#2d65dc;">起飞时间</span>
+                </template>
+                <template slot-scope="scope">
+                  <el-col >
+                    <el-form-item class="ro">{{ scope.row.depTime }}</el-form-item>
+                  </el-col>
+                </template>
+              </el-table-column>
+
+              <el-table-column align="center">
+                <template slot="header" slot-scope="scope">
+                  <span style="color:#2d65dc;">到达时间</span>
+                </template>
+                <template slot-scope="scope">
+                  <el-col >
+                    <el-form-item class="ro">{{ scope.row.arrTime }}</el-form-item>
+                  </el-col>
+                </template>
+              </el-table-column>
+
+              <el-table-column align="center">
+                <template slot="header" slot-scope="scope">
+                  <span style="color:#2d65dc;">舱等</span>
+                </template>
+                <template slot-scope="scope">
+                  <el-col >
+                    <el-form-item class="ro">{{ scope.row.cabinGrade }}</el-form-item>
+                  </el-col>
+                </template>
+              </el-table-column>
+
+              <el-table-column align="center">
+                <template slot="header" slot-scope="scope">
+                  <span style="color:#2d65dc;">子舱位</span>
+                </template>
+                <template slot-scope="scope">
+                  <el-col >
+                    <el-form-item class="ro">{{ scope.row.cabin }}</el-form-item>
+                  </el-col>
+                </template>
+              </el-table-column>
+
+            </el-table>
+          </div>
+        </el-card>
+
+
+
+
+        <el-card>
+          <div slot="header">
+            <span>乘客信息</span>
+          </div>
+          <div>
+
+            <el-table
+              :data="form.reservationPassengers"
+              style="width: 100%"
+              border>
+
+              <el-table-column align="center">
+                <template slot="header" slot-scope="scope">
+                  <span style="color:#2d65dc;">乘客姓名</span>
+                </template>
+                <template slot-scope="scope">
+                  <el-col >
+                    <el-form-item class="ro">{{ scope.row.passengerName }}</el-form-item>
+                  </el-col>
+                </template>
+              </el-table-column>
+
+              <el-table-column align="center">
+                <template slot="header" slot-scope="scope">
+                  <span style="color:#2d65dc;">乘客类型</span>
+                </template>
+                <template slot-scope="scope">
+                  <el-col >
+                    <el-form-item class="ro">{{ scope.row.passengerType }}</el-form-item>
+                  </el-col>
+                </template>
+              </el-table-column>
+
+              <el-table-column align="center">
+                <template slot="header" slot-scope="scope">
+                  <span style="color:#2d65dc;">证件类型</span>
+                </template>
+                <template slot-scope="scope">
+                  <el-col >
+                    <el-form-item class="ro">{{ scope.row.certType }}</el-form-item>
+                  </el-col>
+                </template>
+              </el-table-column>
+
+              <el-table-column align="center" >
+                <template slot="header" slot-scope="scope">
+                  <span style="color:#2d65dc;">证件号</span>
+                </template>
+                <template slot-scope="scope">
+                  <el-col >
+                    <el-form-item class="ro">{{ scope.row.certNo }}</el-form-item>
+                  </el-col>
+                </template>
+              </el-table-column>
+
+              <el-table-column align="center">
+                <template slot="header" slot-scope="scope">
+                  <span style="color:#2d65dc;">出生日期</span>
+                </template>
+                <template slot-scope="scope">
+                  <el-col >
+                    <el-form-item class="ro">{{ scope.row.birthday }}</el-form-item>
+                  </el-col>
+                </template>
+              </el-table-column>
+
+              <el-table-column align="center">
+                <template slot="header" slot-scope="scope">
+                  <span style="color:#2d65dc;">手机号</span>
+                </template>
+                <template slot-scope="scope">
+                  <el-col >
+                    <el-form-item class="ro">{{ scope.row.passengerMobile }}</el-form-item>
+                  </el-col>
+                </template>
+              </el-table-column>
+
+              <el-table-column align="center">
+                <template slot="header" slot-scope="scope">
+                  <span style="color:#2d65dc;">性别</span>
+                </template>
+                <template slot-scope="scope" >
+                  <el-col >
+                    <el-form-item class="ro">{{ scope.row.gender }}</el-form-item>
+                  </el-col>
+                </template>
+              </el-table-column>
+
+            </el-table>
+          </div>
+        </el-card>
+
+
+
+        <el-card>
+          <div slot="header">
+            <span>data信息</span>
+          </div>
+          <div>
+
+            <el-row>
+              <el-col >
+                <el-form-item label="data: ">{{ form.dataContent }}</el-form-item>
+              </el-col>
+            </el-row>
+
+
+
+          </div>
+        </el-card>
+
+
+
 
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -163,7 +415,12 @@
         // 日期范围
         dateRange: [],
         // 表单参数
-        form: {},
+        form: {
+          dataContent:undefined,
+          reservationData:undefined,
+          reservationSegments: [],
+          reservationPassengers: []
+        },
         // 查询参数
         queryParams: {
           current: 1,
@@ -205,6 +462,7 @@
         const id = row.id || this.ids;
         getReservationOrder(id).then(response => {
           this.form = response.data;
+          this.form.dataContent= this.form.reservationData.dataContent;
           this.open = true;
           this.title = "订单信息详情";
         });
@@ -229,10 +487,18 @@
           bookPnrNo: undefined,
           validatingCarrier: undefined,
           tripType: undefined,
-          createTime: undefined
+          createTime: undefined,
+          reservationData: undefined,
+          reservationSegments: [],
+          reservationPassengers: []
         };
         this.resetForm("form");
       }
     }
   };
 </script>
+<style scoped>
+  .ro >>> .el-form-item__content {
+    margin-left: 0px !important;
+  }
+</style>
