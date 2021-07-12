@@ -35,14 +35,14 @@ export function updateOrderInfo(data) {
   })
 }
 
-// OrderInfo状态修改
-export function changeOrderInfoStatus(id, status) {
+// 加解锁
+export function handleOrderInfoLockFlag(id, lockFlag) {
   const data = {
     id,
-    status
+    lockFlag
   }
   return request({
-    url: '/order/order_info/changeStatus',
+    url: '/order/order_info/lock_flag',
     method: 'put',
     data: data
   })

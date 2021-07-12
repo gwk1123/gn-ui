@@ -105,6 +105,28 @@
       <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="150">
         <template slot-scope="scope">
+          <div v-if="scope.row.lockFlag == '0'" >
+          <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-folder-add"
+            @click="handleLockFlag(scope.row,'1')"
+            v-hasPermi="['order/order_info/edit']"
+          >加锁
+          </el-button>
+          </div>
+
+          <div v-if="scope.row.lockFlag == '1'" >
+            <el-button
+              size="mini"
+              type="text"
+              icon="el-icon-folder-remove"
+              @click="handleLockFlag(scope.row,'0')"
+              v-hasPermi="['order/order_info/edit']"
+            >解锁
+            </el-button>
+          </div>
+
           <el-button
             size="mini"
             type="text"
@@ -123,18 +145,9 @@
           </el-button>
         </template>
       </el-table-column>
-      <el-table-column label="状态" align="center" width="80">
-        <template slot-scope="scope">
-          <el-switch
-            v-model="scope.row.status"
-            active-value="0"
-            inactive-value="1"
-            @change="changeStatus(scope.row)"
-          ></el-switch>
-        </template>
-      </el-table-column>
 
       <el-table-column label="id" prop="id" width="70"/>
+      <el-table-column label="加锁人" prop="lockOperator" width="100"/>
       <el-table-column label="订单来源站点" prop="otaSiteCode" width="100"/>
       <el-table-column label="订单编码" prop="orderNo" width="100"/>
       <el-table-column label="订单录入类型" prop="orderInputType" width="100"/>
@@ -967,7 +980,7 @@
     delOrderInfo,
     addOrderInfo,
     updateOrderInfo,
-    changeOrderInfoStatus
+    handleOrderInfoLockFlag
   } from "@/api/order/details/orderInfo";
 
   export default {
@@ -1044,21 +1057,6 @@
           }
         );
       },
-      // 状态修改
-      changeStatus(row) {
-        let text = row.status === "0" ? "启用" : "停用";
-        this.$confirm('确认要"' + text + '""' + row.id + '"编码吗?', "警告", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning"
-        }).then(function () {
-          return changeOrderInfoStatus(row.id, row.status);
-        }).then(() => {
-          this.msgSuccess(text + "成功");
-        }).catch(function () {
-          row.status = row.status === "0" ? "1" : "0";
-        });
-      },
       // 取消按钮
       cancel() {
         this.open = false;
@@ -1105,9 +1103,24 @@
         this.reset();
         const id = row.id || this.ids;
         getOrderInfo(id).then(response => {
-          this.form = response.data;
-          this.open = true;
-          this.title = "修改订单确定";
+          const lock = response.data.lock;
+          if(lock){
+            this.form = response.data.order;
+            this.open = true;
+            this.title = "修改订单确定";
+          }else {
+            this.msgSuccess(response.data.msg);
+          }
+        });
+      },
+      /*更改锁的状态 1-加锁 0-正常*/
+      handleLockFlag(row,flag){
+        handleOrderInfoLockFlag(row.id, flag).then(response => {
+          if (response.code === 200) {
+            this.msgSuccess(flag == '1'?'加锁成功':'解锁成功');
+            this.open = false;
+            this.getList();
+          }
         });
       },
       /** 提交按钮 */
