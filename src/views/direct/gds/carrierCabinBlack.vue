@@ -122,7 +122,10 @@
         statusOptions: [],
         // 查询参数
         queryParams: {
-          apiMethod: undefined
+          carrier: undefined,
+          flightNumber: undefined,
+          officeId: undefined,
+          apiMethod: 1
         }
       };
     },
