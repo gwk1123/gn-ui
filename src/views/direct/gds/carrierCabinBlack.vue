@@ -12,28 +12,6 @@
         />
       </el-form-item>
 
-      <el-form-item label="站点" prop="otaSiteCode">
-        <el-input
-          v-model="queryParams.otaSiteCode"
-          placeholder="请输入站点编码"
-          clearable
-          size="small"
-          style="width: 240px"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-
-      <el-form-item label="生单关联id" prop="referenceId">
-        <el-input
-          v-model="queryParams.referenceId"
-          placeholder="请输入生单关联id"
-          clearable
-          size="small"
-          style="width: 240px"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-
       <el-form-item label="接口方法" prop="apiMethod">
         <el-select
           v-model="queryParams.apiMethod"
@@ -86,36 +64,32 @@
       </el-form-item>
     </el-form>
 
-    <el-table v-loading="loading" :data="requestRecordList" >
-      <el-table-column label="id" prop="id" align="center" class-name="small-padding fixed-width" />
-      <el-table-column label="站点" prop=" " align="center" class-name="small-padding fixed-width" />
-      <el-table-column label="订单编码" prop="reservationNo" align="center" class-name="small-padding fixed-width" />
-      <el-table-column label="OTA订单号" prop="otaReservationNo" align="center" class-name="small-padding fixed-width" />
-      <el-table-column label="GDS系统" rop="gdsChannel" align="center" class-name="small-padding fixed-width" />
-      <el-table-column label="office号" prop="officeNo" align="center" class-name="small-padding fixed-width" />
+    <el-table v-loading="loading" :data="carrierCabinBlackList" >
+      <el-table-column label="航司" prop="carrier" align="center" class-name="small-padding fixed-width" />
+      <el-table-column label="航班号" prop="flightNumber" align="center" class-name="small-padding fixed-width" />
+      <el-table-column label="舱位" prop="cabin" align="center" class-name="small-padding fixed-width" />
+      <el-table-column label="出发时间" prop="depTime" align="center" class-name="small-padding fixed-width" />
+      <el-table-column label="GDS系统" rop="gds" align="center" class-name="small-padding fixed-width" />
+      <el-table-column label="office号" prop="officeId" align="center" class-name="small-padding fixed-width" />
       <el-table-column label="API方法" prop="apiMethod" align="center" class-name="small-padding fixed-width" />
-      <el-table-column label="search时间" prop="searchTime" align="center" class-name="small-padding fixed-width" />
-      <el-table-column label="API请求时间" prop="requestTime" align="center" class-name="small-padding fixed-width" />
-      <el-table-column label="关联UUID" prop="apiUid" align="center" class-name="small-padding fixed-width" />
-      <el-table-column label="生单关联id" prop="referenceId" align="center" class-name="small-padding fixed-width" />
-      <el-table-column label="出发日期" prop="depDate" align="center" class-name="small-padding fixed-width" />
-      <el-table-column label="回程日期" prop="retDate" align="center" class-name="small-padding fixed-width" />
-      <el-table-column label="成人数量" prop="adultNumber" align="center" class-name="small-padding fixed-width" />
-      <el-table-column label="行程类型" prop="tripType" align="center" class-name="small-padding fixed-width" />
-      <el-table-column label="销售航司" prop="marketingAirline" align="center" class-name="small-padding fixed-width" />
-      <el-table-column label="出发机场" prop="depAirport" align="center" class-name="small-padding fixed-width" />
-      <el-table-column label="到达机场" prop="arrAirport" align="center" class-name="small-padding fixed-width" />
-      <el-table-column label="是否成功" prop="successFlag" align="center" class-name="small-padding fixed-width" />
-      <el-table-column label="错误信息描述" prop="errorMessage" align="center" class-name="small-padding fixed-width" />
-    </el-table>
+      <el-table-column label="创建时间" prop="createTime" align="center" class-name="small-padding fixed-width" />
+      <el-table-column label="渠道" prop="channelName" align="center" class-name="small-padding fixed-width" />
+      <el-table-column label="失效时间" prop="displayFailureTime" align="center" class-name="small-padding fixed-width" />
+      <el-table-column label="状态" prop="statusName" align="center" class-name="small-padding fixed-width" />
 
-    <pagination
-      v-show="total>0"
-      :total="total"
-      :page.sync="queryParams.current"
-      :limit.sync="queryParams.size"
-      @pagination="getList"
-    />
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+        <template slot-scope="scope">
+          <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-delete"
+            @click="handleDelete(scope.row)"
+            v-hasPermi="['direct/carrier_cabin_black/remove']"
+          >删除</el-button>
+        </template>
+      </el-table-column>
+
+    </el-table>
   </div>
 </template>
 
@@ -136,8 +110,6 @@
         multiple: true,
         // 显示搜索条件
         showSearch: true,
-        // 总条数
-        total: 0,
         // GDS表格数据
         carrierCabinBlackList: [],
         // 弹出层标题
@@ -148,12 +120,8 @@
         dateRange: [],
         // 状态数据字典
         statusOptions: [],
-        apiMethodOptions: [],
-        successFlagOptions: [],
         // 查询参数
         queryParams: {
-          current: 1,
-          size: 10,
           apiMethod: undefined
         }
       };
@@ -189,6 +157,20 @@
         this.resetForm("queryForm");
         this.handleQuery();
       },
+      /** 删除按钮操作 */
+      handleDelete(row) {
+
+        this.$confirm('是否确认删除?', "警告", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        }).then(function() {
+          return delCarrierCabinBlack(row);
+        }).then(() => {
+          this.getList();
+          this.msgSuccess("删除成功");
+        }).catch(function() {});
+      }
     }
   };
 </script>

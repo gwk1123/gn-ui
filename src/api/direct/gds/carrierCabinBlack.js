@@ -12,7 +12,7 @@ export function listCarrierCabinBlack(data) {
 // 删除GDS
 export function delCarrierCabinBlack(data) {
   return request({
-    url: '/direct/carrier_cabin_black',
+    url: '/direct/carrier_cabin_black/remove',
     method: 'delete',
     params: data
   })
