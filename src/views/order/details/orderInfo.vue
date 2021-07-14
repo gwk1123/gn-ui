@@ -1075,13 +1075,13 @@
         this.reset();
         const id = row.id || this.ids;
         getOrderInfo(id).then(response => {
-          const state = response.data.state;
-          if(state){
-            this.form = response.data.order;
+          debugger;
+          if (response.code === 200) {
+            this.form = response.data;
             this.open = true;
             this.title = "修改订单确定";
           }else {
-            this.msgSuccess(response.data.msg);
+            this.msgSuccess(response.msg);
           }
         });
       },
@@ -1089,14 +1089,11 @@
       handleLockFlag(row,flag){
         handleOrderInfoLockFlag(row.id, flag).then(response => {
           if (response.code === 200) {
-            const state = response.data.state;
-            if(state) {
               this.msgSuccess(flag == '1' ? '加锁成功' : '解锁成功');
               this.open = false;
               this.getList();
-            }else {
-              this.msgSuccess(response.data.msg);
-            }
+          }else {
+            this.msgSuccess(response.msg);
           }
         });
       },

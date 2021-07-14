@@ -51,6 +51,8 @@ service.interceptors.response.use(res => {
         type: 'error'
       })
       return Promise.reject(new Error(message))
+    }else if(code === 999){
+      return res.data
     } else if (code !== 200) {
       Notification.error({
         title: message
