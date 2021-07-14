@@ -168,34 +168,6 @@
       <el-table-column label="出发地" prop="depAirport" width="100"/>
       <el-table-column label="目的地" prop="arrAirport" width="100"/>
       <el-table-column label="航司" prop="airline" width="80"/>
-      <!--      <el-table-column label="状态" align="center" width="80">-->
-      <!--        <template slot-scope="scope">-->
-      <!--          <el-switch-->
-      <!--            v-model="scope.row.status"-->
-      <!--            active-value="0"-->
-      <!--            inactive-value="1"-->
-      <!--            @change="changeStatus(scope.row)"-->
-      <!--          ></el-switch>-->
-      <!--        </template>-->
-      <!--      </el-table-column>-->
-      <!--      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">-->
-      <!--        <template slot-scope="scope">-->
-      <!--          <el-button-->
-      <!--            size="mini"-->
-      <!--            type="text"-->
-      <!--            icon="el-icon-edit"-->
-      <!--            @click="handleUpdate(scope.row)"-->
-      <!--            v-hasPermi="['manual/base_air_route/edit']"-->
-      <!--          >修改</el-button>-->
-      <!--          <el-button-->
-      <!--            size="mini"-->
-      <!--            type="text"-->
-      <!--            icon="el-icon-delete"-->
-      <!--            @click="handleDelete(scope.row)"-->
-      <!--            v-hasPermi="['manual/base_air_route/remove']"-->
-      <!--          >删除</el-button>-->
-      <!--        </template>-->
-      <!--      </el-table-column>-->
     </el-table>
 
     <pagination
@@ -1103,8 +1075,8 @@
         this.reset();
         const id = row.id || this.ids;
         getOrderInfo(id).then(response => {
-          const lock = response.data.lock;
-          if(lock){
+          const state = response.data.state;
+          if(state){
             this.form = response.data.order;
             this.open = true;
             this.title = "修改订单确定";
@@ -1117,9 +1089,14 @@
       handleLockFlag(row,flag){
         handleOrderInfoLockFlag(row.id, flag).then(response => {
           if (response.code === 200) {
-            this.msgSuccess(flag == '1'?'加锁成功':'解锁成功');
-            this.open = false;
-            this.getList();
+            const state = response.data.state;
+            if(state) {
+              this.msgSuccess(flag == '1' ? '加锁成功' : '解锁成功');
+              this.open = false;
+              this.getList();
+            }else {
+              this.msgSuccess(response.data.msg);
+            }
           }
         });
       },
